@@ -1,4 +1,4 @@
-const moongose = require ('mongoose');
+const mongoose = require ('mongoose');
 const dns = require('dns');
 
 // usa el dns de google 

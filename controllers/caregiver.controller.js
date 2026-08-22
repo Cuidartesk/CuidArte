@@ -1,18 +1,18 @@
 const Caregiver = require ('../models/caregiver.model');
 
 exports.home = async (req, res) => {
-    res.render ('pages,index')
+    res.render ('pages/index');
 }
 
 // Obtiene a todos los cuidadores
-exports.consultar = async = (req, res) => {
+exports.consultar = async  (req, res) => {
     try {
         const caregivers = await Caregiver.find({});
-        console.log(caregivers)
+        res.status(200).json(caregivers);
     } catch (error) {
         res.status(500).json ({message: 'Error al obtener los cuidadores', error: error.message });
     }
-}
+};
 
 
 // Obtener un cuidador por el id

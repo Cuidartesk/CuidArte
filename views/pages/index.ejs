@@ -1,11 +1,180 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagina principal</title>
+   <%- include('../partials/head'); %>
 </head>
 <body>
-    <h1>Hola</h1>
+
+   <%- include('../partials/header'); %>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-content">
+      <div class="hero-text">
+        <h1>Tu bienestar comienza con CuidArte</h1>
+        <p>CuidArte es un espacio para fomentar el autocuidado, la salud emocional y el crecimiento personal.</p>
+        <div class="buttons">
+<!-- INICIO MODIFICACION: el boton apuntaba a la API (/api/v1/services) y mostraba JSON crudo; ahora va a la pagina de servicios -->
+          <a href="/servicios" class="btn-primary">Ver servicios</a>
+<!-- FIN MODIFICACION -->
+          <a href="#sobre" class="btn-outline">Saber más</a>
+        </div>
+      </div>
+
+      <!-- Carrusel -->
+      <div class="carousel-wrapper">
+        <div class="carousel-container">
+          <div class="carousel-slides">
+            <div class="carousel-slide">
+              <img src="/assets/image/principal.png" alt="Ilustración CuidArte">
+            </div>
+            <div class="carousel-slide">
+              <img src="/assets/image/carrusel1.png" alt="Cuidado profesional">
+            </div>
+            <div class="carousel-slide">
+              <img src="/assets/image/carrusel2.png" alt="Acompañamiento emocional">
+            </div>
+            <div class="carousel-slide">
+              <img src="/assets/image/carrusel3.png" alt="Psicología">
+            </div>
+          </div>
+
+          <button class="carousel-btn prev" onclick="moveSlide(-1)">&#10094;</button>
+          <button class="carousel-btn next" onclick="moveSlide(1)">&#10095;</button>
+
+          <div class="carousel-indicators">
+            <button class="indicator active" onclick="goToSlide(0)"></button>
+            <button class="indicator" onclick="goToSlide(1)"></button>
+            <button class="indicator" onclick="goToSlide(2)"></button>
+            <button class="indicator" onclick="goToSlide(3)"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOBRE -->
+  <section id="sobre" class="about container">
+    <div class="about-text">
+      <h2>Sobre nosotros</h2>
+      <p>En CuidArte promovemos la salud mental y el bienestar emocional a través de herramientas, talleres y acompañamiento profesional. Creemos que el cuidado propio es la base para transformar nuestra vida y entorno.</p>
+      <a href="#" class="btn-ver">Ver más</a>
+    </div>
+  </section>
+
+  <!-- ESPECIALIDADES -->
+  <section id="especialidades" class="especialidades container">
+    <h2>Nuestras Especialidades</h2>
+    <div class="cards">
+
+      <div class="card">
+        <img src="/assets/image/psicologia.png" alt="Psicología">
+        <h3>Psicología</h3>
+        <p>Apoyo profesional para la gestión emocional y el bienestar mental.</p>
+      </div>
+
+      <div class="card">
+        <img src="/assets/image/nutricionista.jpg" alt="Nutrición">
+        <h3>Nutrición</h3>
+        <p>Planes personalizados para mejorar tu salud y energía diaria.</p>
+      </div>
+
+      <div class="card">
+        <img src="/assets/image/terapia.png" alt="Terapias alternativas">
+        <h3>Terapias Alternativas</h3>
+        <p>Espacios para conectar contigo mismo a través de prácticas holísticas.</p>
+      </div>
+
+      <div class="card">
+        <img src="/assets/image/cardiologia.png" alt="Cardiología">
+        <h3>Cardiología</h3>
+        <p>Atención especializada para el cuidado del corazón.</p>
+      </div>
+
+      <div class="card">
+        <img src="/assets/image/oncologia.png" alt="Oncología">
+        <h3>Oncología</h3>
+        <p>Diagnóstico y tratamiento integral para pacientes oncológicos.</p>
+      </div>
+
+      <div class="card">
+        <img src="/assets/image/pediatria.png" alt="Pediatría">
+        <h3>Pediatría</h3>
+        <p>Cuidado médico para niños y adolescentes.</p>
+      </div>
+
+      <div class="card">
+        <img src="/assets/image/geriatria.png" alt="Geriatría">
+        <h3>Geriatría</h3>
+        <p>Atención especializada para personas mayores.</p>
+      </div>
+
+      <div class="card">
+        <img src="/assets/image/demencia.png" alt="Demencia y Alzheimer">
+        <h3>Demencia y Alzheimer</h3>
+        <p>Acompañamiento especializado para personas con deterioro cognitivo.</p>
+      </div>
+
+      <div class="card">
+        <img src="/assets/image/enfermedades.png" alt="Enfermedades Crónicas">
+        <h3>Enfermedades Crónicas</h3>
+        <p>Manejo integral de enfermedades como diabetes e hipertensión.</p>
+      </div>
+
+      <div class="card">
+        <img src="/assets/image/discapacidad.png" alt="Discapacidades Físicas">
+        <h3>Discapacidades Físicas</h3>
+        <p>Rehabilitación y apoyo para movilidad reducida.</p>
+      </div>
+
+    </div>
+  </section>
+
+   <%- include('../partials/footer'); %>
+
+   <script>
+       let currentSlide = 0;
+       const slides = document.querySelectorAll('.carousel-slide');
+       const indicators = document.querySelectorAll('.indicator');
+       const totalSlides = slides.length;
+       let autoSlideInterval;
+
+       function updateCarousel() {
+         const slidesContainer = document.querySelector('.carousel-slides');
+         slidesContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+         indicators.forEach((indicator, index) => {
+           indicator.classList.toggle('active', index === currentSlide);
+         });
+       }
+
+       function moveSlide(direction) {
+         currentSlide += direction;
+         if (currentSlide < 0) currentSlide = totalSlides - 1;
+         if (currentSlide >= totalSlides) currentSlide = 0;
+         updateCarousel();
+         resetAutoSlide();
+       }
+
+       function goToSlide(index) {
+         currentSlide = index;
+         updateCarousel();
+         resetAutoSlide();
+       }
+
+       function autoSlide() {
+         moveSlide(1);
+       }
+
+       function startAutoSlide() {
+         autoSlideInterval = setInterval(autoSlide, 4000);
+       }
+
+       function resetAutoSlide() {
+         clearInterval(autoSlideInterval);
+         startAutoSlide();
+       }
+
+       startAutoSlide();
+   </script>
 </body>
 </html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../partials/head'); %>
+</head>
+<body>
+
+   <%- include('../partials/header'); %>
+
+  <section class="servicios-hero">
+    <div class="container">
+      <h1>Nuestros Servicios</h1>
+      <p>Soluciones integrales de cuidado y bienestar para adultos mayores y sus familias</p>
+    </div>
+  </section>
+
+  <section class="servicios-principales" style="background: #f9fafb; padding: 50px 0 60px 0;">
+    <div class="container">
+      <div class="section-header" style="text-align: center; max-width: 640px; margin: 0 auto 36px auto;">
+        <h2 style="font-size: 1.9rem; font-weight: 800; color: #1f2937; margin-bottom: 8px;">Servicios Destacados</h2>
+        <p style="color: #6b7280; font-size: 1rem; margin: 0;">Atenci&oacute;n profesional y personalizada para el bienestar integral</p>
+        <div style="width: 50px; height: 3px; background: #27BEF5; border-radius: 2px; margin: 16px auto 0 auto;"></div>
+      </div>
+
+      <div class="servicios-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px;">
+        <% if (locals.servicios && servicios.length > 0) { %>
+          <% servicios.forEach(function(servicio) { %>
+            <div class="servicio-card featured" style="background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.07); transition: transform 0.25s, box-shadow 0.25s; display: flex; flex-direction: column; border: 1px solid #f3f4f6;">
+
+              <% if (servicio.imageData) { %>
+                <!-- Card CON foto: la imagen manda -->
+                <div class="servicio-foto" title="Clic para ampliar">
+                  <img src="<%= servicio.imageData %>" alt="<%= servicio.name %>">
+                  <% if (servicio.price) { %>
+                    <span class="servicio-precio-flotante"><%= formatearPrecio(servicio.price) %></span>
+                  <% } %>
+                  <span class="servicio-lupa">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    Ampliar
+                  </span>
+                </div>
+              <% } else { %>
+                <!-- Card SIN foto: icono decorativo -->
+                <div style="background: linear-gradient(135deg, #e0f2fe, #f0f9ff); padding: 26px; display: flex; justify-content: center;">
+                  <div style="width: 64px; height: 64px; background: white; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #27BEF5; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                  </div>
+                </div>
+              <% } %>
+
+              <div class="servicio-content" style="padding: 22px; flex: 1; display: flex; flex-direction: column;">
+                <h3 style="margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 800; color: #1f2937;"><%= servicio.name %></h3>
+                <p style="color: #6b7280; font-size: 0.93rem; line-height: 1.6; margin: 0 0 18px 0; flex: 1;"><%= servicio.description %></p>
+
+        <!-- INICIO MODIFICACION: Conocer mas lleva al registro (selector de tipo) -->
+        <a href="/seleccionar-tipo" class="servicio-btn">Conocer m&aacute;s</a>
+<!-- FIN MODIFICACION -->
+              </div>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <!-- Fallback estático -->
+          <div class="servicio-card featured" style="background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.07); border: 1px solid #f3f4f6;">
+            <div class="servicio-foto"><img src="/assets/image/terapia.png" alt="Talleres"></div>
+            <div style="padding: 22px;">
+              <h3 style="margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 800; color: #1f2937;">Talleres</h3>
+              <p style="color: #6b7280; font-size: 0.93rem; margin: 0 0 16px 0;">Actividades interactivas para el autoconocimiento y la gesti&oacute;n emocional.</p>
+              <a href="/contactanos" class="servicio-btn">Ver Calendario</a>
+            </div>
+          </div>
+
+          <div class="servicio-card featured" style="background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.07); border: 1px solid #f3f4f6;">
+            <div class="servicio-foto"><img src="/assets/image/principal.png" alt="Recursos"></div>
+            <div style="padding: 22px;">
+              <h3 style="margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 800; color: #1f2937;">Recursos</h3>
+              <p style="color: #6b7280; font-size: 0.93rem; margin: 0 0 16px 0;">Materiales descargables y contenido profesional actualizado.</p>
+              <a href="/contactanos" class="servicio-btn">Ver Recursos</a>
+            </div>
+          </div>
+
+          <div class="servicio-card featured" style="background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.07); border: 1px solid #f3f4f6;">
+            <div class="servicio-foto"><img src="/assets/image/apoyo.png" alt="Acompañamiento"></div>
+            <div style="padding: 22px;">
+              <h3 style="margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 800; color: #1f2937;">Acompa&ntilde;amiento</h3>
+              <p style="color: #6b7280; font-size: 0.93rem; margin: 0 0 16px 0;">Sesiones personalizadas con profesionales especializados.</p>
+              <a href="/contactanos" class="servicio-btn">Buscar Cuidador</a>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section" style="background: linear-gradient(135deg, #27BEF5, #6DD5FA); padding: 50px 20px;">
+    <div class="container" style="text-align: center; max-width: 700px;">
+      <h2 style="color: white; font-size: 1.7rem; font-weight: 800; margin-bottom: 10px;">&iquest;Listo para comenzar?</h2>
+      <p style="color: rgba(255,255,255,0.95); font-size: 1rem; margin-bottom: 22px;">Cont&aacute;ctanos hoy y descubre c&oacute;mo podemos ayudarte a mejorar la vida de tus seres queridos.</p>
+      <div class="cta-buttons" style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <a href="/contactanos" style="background: white; color: #0284c7; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">Contactar ahora</a>
+<!-- INICIO MODIFICACION: Crear cuenta lleva al selector de tipo, igual que Django -->
+        <a href="/seleccionar-tipo" style="background: rgba(255,255,255,0.15); color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 700; border: 1px solid rgba(255,255,255,0.4); backdrop-filter: blur(4px);">Crear cuenta</a>
+<!-- FIN MODIFICACION -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Visor a pantalla completa -->
+  <div id="visorFoto" class="visor-foto">
+    <button class="visor-cerrar" aria-label="Cerrar">&times;</button>
+    <img id="visorImg" src="" alt="Vista ampliada">
+  </div>
+
+  <style>
+    /* ---- Foto protagonista de la card ---- */
+    .servicio-foto {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(255,255,255,0.55), transparent 45%),
+        linear-gradient(135deg, #e0f2fe, #f0f9ff);
+      border-bottom: 1px solid #e0f2fe;
+      cursor: zoom-in;
+    }
+    /* La foto SIEMPRE completa, nunca recortada */
+    .servicio-foto img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(2, 132, 199, 0.16);
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+      display: block;
+    }
+    .servicio-card:hover .servicio-foto img {
+      transform: scale(1.04);
+      box-shadow: 0 12px 32px rgba(2, 132, 199, 0.26);
+    }
+
+    /* Precio flotando sobre la foto */
+    .servicio-precio-flotante {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(255, 255, 255, 0.94);
+      color: #166534;
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    }
+
+    /* Pastilla "Ampliar" que aparece al pasar el mouse */
+    .servicio-lupa {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.72);
+      color: white;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 20px;
+      opacity: 0;
+      transition: opacity 0.25s;
+      backdrop-filter: blur(3px);
+    }
+    .servicio-foto:hover .servicio-lupa { opacity: 1; }
+
+    /* Boton de la card */
+    .servicio-btn {
+      background: linear-gradient(135deg, #27BEF5, #6DD5FA);
+      color: white !important;
+      padding: 11px;
+      border-radius: 10px;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.92rem;
+      display: block;
+      transition: filter 0.2s, transform 0.2s;
+    }
+    .servicio-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+    /* Elevacion de toda la card */
+    .servicio-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.13) !important;
+    }
+
+    /* ---- Visor a pantalla completa ---- */
+    .visor-foto {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.9);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      cursor: zoom-out;
+    }
+    .visor-foto.abierto { display: flex; }
+    .visor-foto img {
+      max-width: 100%;
+      max-height: 90vh;
+      border-radius: 14px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+      animation: visorEntrada 0.25s ease;
+    }
+    @keyframes visorEntrada {
+      from { opacity: 0; transform: scale(0.94); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .visor-cerrar {
+      position: absolute;
+      top: 18px;
+      right: 26px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 2.6rem;
+      line-height: 1;
+      cursor: pointer;
+      opacity: 0.8;
+    }
+    .visor-cerrar:hover { opacity: 1; }
+  </style>
+
+  <script>
+    // Abrir / cerrar el visor de fotos
+    var visor = document.getElementById('visorFoto');
+    var visorImg = document.getElementById('visorImg');
+
+    document.querySelectorAll('.servicio-foto img').forEach(function (img) {
+      img.parentElement.addEventListener('click', function () {
+        visorImg.src = img.src;
+        visor.classList.add('abierto');
+      });
+    });
+
+    function cerrarVisor() { visor.classList.remove('abierto'); }
+    visor.addEventListener('click', cerrarVisor);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') cerrarVisor();
+    });
+  </script>
+
+   <%- include('../partials/footer'); %>
+</body>
+</html>

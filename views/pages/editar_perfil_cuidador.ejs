@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../partials/head'); %>
+</head>
+<body>
+
+   <%- include('../partials/header'); %>
+
+<!-- INICIO MODIFICACION: editar perfil del cuidador, portado de editar_perfil_cuidador.html de Django -->
+  <section class="welcome-section" style="padding: 40px 20px;">
+    <div class="container">
+      <h1>Editar Perfil</h1>
+      <p>Actualiza tu información personal y profesional en un solo lugar</p>
+    </div>
+  </section>
+
+  <main class="container" style="padding: 36px 20px; max-width: 780px;">
+    <a href="/perfil-cuidador" style="color: #6b7280; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 18px;">&larr; Volver al perfil</a>
+
+    <% if (Object.keys(errores).length > 0) { %>
+      <div style="background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; padding: 12px 16px; border-radius: 10px; margin-bottom: 18px;">Revisa los campos marcados en rojo.</div>
+    <% } %>
+
+    <!-- INICIO MODIFICACION: la foto viaja en Base64 dentro del campo oculto, igual que productos/servicios -->
+    <form method="POST" action="/editar-perfil-cuidador" id="formPerfilCuidador" style="display: flex; flex-direction: column; gap: 20px;">
+      <input type="hidden" name="fotoData" id="fotoData" value="<%= usuario.foto || '' %>">
+      <!-- FIN MODIFICACION -->
+
+      <!-- Información Personal -->
+      <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 24px;">
+        <h3 style="margin: 0 0 16px 0; font-size: 1.02rem; font-weight: 700; color: #1f2937; display: flex; align-items: center; gap: 8px;"><span style="width: 8px; height: 8px; background: #27BEF5; border-radius: 50%;"></span>Información Personal</h3>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div>
+            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Nombre *</label>
+            <input type="text" name="nombre" class="form-control" value="<%= usuario.name || '' %>" required>
+            <% if (errores.nombre) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.nombre %></p><% } %>
+          </div>
+          <div>
+            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Apellido *</label>
+            <input type="text" name="apellido" class="form-control" value="<%= usuario.apellido || '' %>" required>
+            <% if (errores.apellido) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.apellido %></p><% } %>
+          </div>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Correo electrónico</label>
+          <input type="email" name="correo" class="form-control" value="<%= usuario.email || '' %>" required>
+          <% if (errores.correo) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.correo %></p><% } %>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px;">
+          <div>
+            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Teléfono *</label>
+            <input type="text" name="telefono" class="form-control" value="<%= usuario.telefono || '' %>" maxlength="10" required placeholder="10 dígitos">
+            <% if (errores.telefono) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.telefono %></p><% } %>
+          </div>
+          <div>
+            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Ciudad</label>
+            <!-- INICIO MODIFICACION: lista de ciudades en vez de texto libre -->
+            <select name="direccion" class="form-control">
+              <option value="">Selecciona una ciudad</option>
+              <% const CIUDADES = ['Amazonas - Leticia','Antioquia - Medellín','Antioquia - Envigado','Antioquia - Rionegro','Arauca - Arauca','Atlántico - Barranquilla','Bogotá D.C.','Bolívar - Cartagena','Boyacá - Tunja','Caldas - Manizales','Caquetá - Florencia','Casanare - Yopal','Cauca - Popayán','Cesar - Valledupar','Chocó - Quibdó','Córdoba - Montería','Cundinamarca - Soacha','Cundinamarca - Chía','Cundinamarca - Zipaquirá','Huila - Neiva','La Guajira - Riohacha','Magdalena - Santa Marta','Meta - Villavicencio','Nariño - Pasto','Norte de Santander - Cúcuta','Quindío - Armenia','Risaralda - Pereira','Risaralda - Dosquebradas','Santander - Bucaramanga','Santander - Barrancabermeja','Sucre - Sincelejo','Tolima - Ibagué','Valle del Cauca - Cali','Valle del Cauca - Palmira','Valle del Cauca - Buenaventura','Vaupés - Mitú']; %>
+              <% CIUDADES.forEach(function(ciudad) { %>
+                <option value="<%= ciudad %>" <%= usuario.direccion === ciudad ? 'selected' : '' %>><%= ciudad %></option>
+              <% }); %>
+            </select>
+            <!-- FIN MODIFICACION -->
+          </div>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Fecha de nacimiento *</label>
+          <input type="date" name="fechaNacimiento" class="form-control" value="<%= usuario.fechaNacimiento ? new Date(usuario.fechaNacimiento).toISOString().substring(0,10) : '' %>" required>
+          <% if (errores.fechaNacimiento) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.fechaNacimiento %></p><% } %>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Foto de perfil</label>
+          <input type="file" id="imagenPerfil" accept="image/*">
+          <img id="previewPerfil" src="<%= usuario.foto || '' %>" alt="Vista previa" style="<%= usuario.foto ? 'max-width: 140px; border-radius: 12px; margin-top: 8px;' : 'display: none; max-width: 140px; border-radius: 12px; margin-top: 8px;' %>">
+          <% if (errores.foto) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.foto %></p><% } %>
+        </div>
+      </div>
+
+      <!-- Información Profesional -->
+      <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 24px;">
+        <h3 style="margin: 0 0 16px 0; font-size: 1.02rem; font-weight: 700; color: #1f2937; display: flex; align-items: center; gap: 8px;"><span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span>Información Profesional</h3>
+
+        <div>
+          <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">C&eacute;dula</label>
+          <!-- INICIO MODIFICACION: cedula solo numeros, entre 6 y 10 caracteres -->
+          <input type="text" name="cedula" class="form-control" value="<%= usuario.cedula || '' %>"
+                 maxlength="10" inputmode="numeric" pattern="[0-9]{6,10}"
+                 title="Entre 6 y 10 n&uacute;meros, sin letras, puntos, comas ni guiones"
+                 placeholder="Ej. 1023456789">
+          <% if (errores.cedula) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.cedula %></p><% } %>
+          <!-- FIN MODIFICACION -->
+        </div>
+
+        <div style="margin-top: 14px;">
+          <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Especialidades *</label>
+          <select name="especialidades" class="form-control" required>
+            <option value="">Selecciona una especialidad</option>
+            <% ['Geriatría','Enfermería','Psicología','Fisioterapia','Nutrición','Cardiología','Oncología','Pediatría','Demencia','Discapacidad','Cuidados Paliativos','Terapia Ocupacional','Acompañamiento Terapéutico'].forEach(function(e) { %>
+              <option value="<%= e %>" <%= usuario.especialidades === e ? 'selected' : '' %>><%= e %></option>
+            <% }); %>
+          </select>
+          <% if (errores.especialidades) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.especialidades %></p><% } %>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Experiencia *</label>
+          <textarea name="experiencia" rows="3" class="form-control"><%= usuario.experiencia || '' %></textarea>
+          <small style="color: #9ca3af; font-size: 0.8rem;">Mínimo 5, máximo 200 caracteres.</small>
+          <% if (errores.experiencia) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.experiencia %></p><% } %>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; justify-content: flex-start;">
+        <button type="submit" style="background: linear-gradient(135deg, #27BEF5, #6DD5FA); color: white; padding: 10px 22px; border: none; border-radius: 10px; font-weight: 700; font-size: 0.92rem; cursor: pointer; box-shadow: 0 4px 12px rgba(39,190,245,0.25);">Guardar cambios</button>
+        <a href="/perfil-cuidador" style="background: #f3f4f6; color: #374151; padding: 10px 22px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 0.92rem;">Cancelar</a>
+      </div>
+    </form>
+  </main>
+
+  <style>
+    .form-control, input[type="text"], input[type="email"], input[type="date"], textarea, select { width: 100%; padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; background: #f9fafb; box-sizing: border-box; }
+    .form-control:focus, input:focus, textarea:focus, select:focus { outline: none; border-color: #27BEF5; background: white; box-shadow: 0 0 0 3px rgba(39,190,245,0.15); }
+    @media (max-width: 700px) { div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; } }
+  </style>
+
+<script src="/js/imagenes_base64.js"></script>
+<script>
+// INICIO MODIFICACION: conecta el cargador de imagen Base64 al formulario de perfil
+document.addEventListener('DOMContentLoaded', function () {
+  conectarFormularioImagen({
+    form: 'formPerfilCuidador',
+    inputArchivo: 'imagenPerfil',
+    preview: 'previewPerfil',
+    campoOculto: 'fotoData'
+  });
+});
+// FIN MODIFICACION
+</script>
+<!-- FIN MODIFICACION -->
+
+   <%- include('../partials/footer'); %>
+</body>
+</html>

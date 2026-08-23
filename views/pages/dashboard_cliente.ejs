@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../partials/head'); %>
+</head>
+<body>
+
+   <%- include('../partials/header'); %>
+
+<!-- INICIO MODIFICACION: dashboard del cliente, portado de dashboard_cliente.html de Django -->
+  <main class="dashboard-content">
+    <section class="welcome-section">
+      <div class="container">
+        <h1>&iexcl;Bienvenido, <%= usuario.name %> <%= usuario.apellido || '' %>!</h1>
+        <p style="margin-bottom: 10px;">Encuentra el cuidado profesional que necesitas</p>
+        <span style="background: rgba(255,255,255,0.2); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px; backdrop-filter: blur(4px);">CLIENTE</span>
+      </div>
+    </section>
+
+    <section class="dashboard-main container">
+      <div class="dashboard-grid">
+        <!-- Card Buscar Cuidadores -->
+        <div class="dashboard-card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+          </div>
+          <h3>Buscar Cuidadores</h3>
+          <p>Encuentra profesionales certificados seg&uacute;n tus necesidades</p>
+          <a href="/buscar-cuidadores" class="card-btn">Explorar</a>
+        </div>
+
+        <!-- Card Mis Reservas -->
+        <div class="dashboard-card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </div>
+          <h3>Mis Reservas</h3>
+          <p>Gestiona tus citas y servicios programados</p>
+          <a href="/mis-reservas" class="card-btn">Ver Reservas</a>
+        </div>
+
+        <!-- Card Servicios -->
+        <div class="dashboard-card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+            </svg>
+          </div>
+          <h3>Servicios</h3>
+          <p>Explora todos nuestros servicios de cuidado profesional</p>
+          <a href="/servicios" class="card-btn">Ver Servicios</a>
+        </div>
+
+        <!-- Card Tienda -->
+        <div class="dashboard-card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"></path>
+              <path d="M3 8l9 5 9-5"></path>
+            </svg>
+          </div>
+          <h3>Tienda</h3>
+          <p>Suministros m&eacute;dicos y dispositivos biom&eacute;dicos</p>
+          <a href="/tienda" class="card-btn">Ver Tienda</a>
+        </div>
+
+        <!-- Card Soporte -->
+        <div class="dashboard-card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <h3>Ayuda y Soporte</h3>
+          <p>Estamos aqu&iacute; para ayudarte con cualquier duda</p>
+          <a href="/contactanos" class="card-btn">Contactar</a>
+        </div>
+      </div>
+    </section>
+  </main>
+<!-- FIN MODIFICACION -->
+
+   <%- include('../partials/footer'); %>
+</body>
+</html>

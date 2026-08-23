@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../partials/head'); %>
+</head>
+<body>
+
+   <%- include('../partials/header'); %>
+
+  <section class="contacto-hero">
+    <div class="container">
+      <h1>Cont&aacute;ctanos</h1>
+      <p>Estamos aqu&iacute; para ayudarte. Si tienes alguna pregunta o necesitas m&aacute;s informaci&oacute;n sobre nuestros servicios, no dudes en comunicarte con nosotros.</p>
+    </div>
+  </section>
+
+  <section class="contacto-section">
+    <div class="contacto-container">
+
+      <div class="info-contacto">
+        <h2>Informaci&oacute;n de contacto</h2>
+        <p class="info-subtitle">Encuentra diferentes formas de comunicarte con nosotros</p>
+        <div class="contacto-item">
+          <div class="contacto-icon email-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          </div>
+          <div class="contacto-details"><h3>Email</h3><p>info@cuidarte.com</p><p>contacto@cuidarte.com</p></div>
+        </div>
+        <div class="contacto-item">
+          <div class="contacto-icon phone-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          </div>
+          <div class="contacto-details"><h3>Tel&eacute;fono</h3><p>+57 300 123 4567</p><p>+57 604 123 4567</p></div>
+        </div>
+        <div class="contacto-item">
+          <div class="contacto-icon location-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          </div>
+          <div class="contacto-details"><h3>Ubicaci&oacute;n</h3><p>Medell&iacute;n, Antioquia</p><p>Colombia</p></div>
+        </div>
+        <div class="contacto-item">
+          <div class="contacto-icon clock-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+          <div class="contacto-details"><h3>Horario</h3><p>Lunes a Viernes: 8AM - 6PM</p><p>S&aacute;bados: 9AM - 2PM</p></div>
+        </div>
+        <div class="social-links">
+          <h3>S&iacute;guenos</h3>
+          <div class="social-icons">
+            <a href="#" class="social-icon" aria-label="Facebook">&#128216;</a>
+            <a href="#" class="social-icon" aria-label="Instagram">&#128248;</a>
+            <a href="#" class="social-icon" aria-label="WhatsApp">&#128172;</a>
+            <a href="#" class="social-icon" aria-label="Twitter">&#128038;</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="formulario-contacto">
+        <h2>Env&iacute;anos un mensaje</h2>
+        <p class="form-subtitle">Completa el formulario y te responderemos pronto</p>
+
+        <form method="POST" action="#">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="id_nombre">Nombre *</label>
+              <input type="text" id="id_nombre" name="nombre" required>
+            </div>
+            <div class="form-group">
+              <label for="id_apellido">Apellido *</label>
+              <input type="text" id="id_apellido" name="apellido" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="id_correo">Correo *</label>
+              <input type="email" id="id_correo" name="correo" required>
+            </div>
+            <div class="form-group">
+              <label for="id_telefono">Tel&eacute;fono *</label>
+              <input type="tel" id="id_telefono" name="telefono" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="id_ciudad">Ciudad *</label>
+            <input type="text" id="id_ciudad" name="ciudad" required>
+          </div>
+
+          <div class="form-group">
+            <label for="id_asunto">Asunto *</label>
+            <input type="text" id="id_asunto" name="asunto" required>
+          </div>
+
+          <div class="form-group">
+            <label for="id_mensaje">Mensaje *</label>
+            <textarea id="id_mensaje" name="mensaje" rows="4" required></textarea>
+          </div>
+
+          <button type="submit" class="btn-enviar"><span>Enviar mensaje</span></button>
+        </form>
+      </div>
+
+    </div>
+  </section>
+
+   <%- include('../partials/footer'); %>
+</body>
+</html>

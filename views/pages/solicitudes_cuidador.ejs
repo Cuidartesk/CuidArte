@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../partials/head'); %>
+</head>
+<body>
+
+   <%- include('../partials/header'); %>
+
+<!-- INICIO MODIFICACION: solicitudes del cuidador, portado de solicitudes_cuidador.html de Django -->
+  <main class="dashboard-content">
+    <section class="welcome-section">
+      <div class="container">
+        <h1>Solicitudes de Cuidado</h1>
+        <p>Revisa y gestiona las solicitudes que te han enviado los clientes.</p>
+      </div>
+    </section>
+
+    <section class="dashboard-main container">
+      <% if (solicitudes.length > 0) { %>
+        <p style="color: #6b7280; margin-bottom: 16px;"><%= solicitudes.length %> solicitud(es) recibida(s)</p>
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <% solicitudes.forEach(function(s) { const c = s.cliente || {}; %>
+            <div style="background: white; border-radius: 16px; padding: 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #f3f4f6;">
+              <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 10px;">
+                <div>
+                  <h3 style="margin: 0; font-size: 1.05rem; color: #1f2937;"><%= c.name || 'Cliente' %> <%= c.apellido || '' %></h3>
+                  <!-- INICIO MODIFICACION: se muestra el servicio solicitado -->
+                  <% if (s.servicio) { %>
+                    <p style="margin: 4px 0 0 0; color: #0ea5e9; font-size: 0.85rem; font-weight: 600;"><%= s.servicio %></p>
+                  <% } %>
+                  <!-- FIN MODIFICACION -->
+                  <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 0.88rem;"><%= c.email || '' %> · <%= new Date(s.createdAt).toLocaleString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></p>
+                  <p style="margin: 8px 0 0 0; color: #374151; background: #f9fafb; padding: 10px 14px; border-radius: 10px; white-space: pre-wrap;"><%= s.mensaje %></p>
+                  <!-- INICIO MODIFICACION: botones funcionales para responder la solicitud
+                       (el modulo de chat todavia no existe en esta version) -->
+                  <% if (s.estado === 'pendiente') { %>
+                    <form method="post" action="/solicitudes/<%= s._id %>/aceptar" style="display: inline-block; margin-top: 10px;">
+                      <button type="submit" style="background: #10b981; color: white; padding: 8px 14px; border: none; border-radius: 10px; font-weight: 600; font-size: 0.85rem; cursor: pointer;">&check; Aceptar</button>
+                    </form>
+                    <form method="post" action="/solicitudes/<%= s._id %>/rechazar" style="display: inline-block; margin-top: 10px;">
+                      <button type="submit" style="background: #ef4444; color: white; padding: 8px 14px; border: none; border-radius: 10px; font-weight: 600; font-size: 0.85rem; cursor: pointer;">&times; Rechazar</button>
+                    </form>
+                  <% } %>
+                  <!-- FIN MODIFICACION -->
+                </div>
+                <span style="background: <%= s.estado === 'pendiente' ? '#fef3c7; color: #92400e' : (s.estado === 'aceptada' ? '#dcfce7; color: #166534' : '#fee2e2; color: #991b1b') %>; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: capitalize;"><%= s.estado %></span>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <div style="background: white; border-radius: 16px; padding: 40px 20px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+          <p style="color: #6b7280; font-weight: 600; margin: 0 0 8px 0;">No hay solicitudes</p>
+          <p style="color: #9ca3af; font-size: 0.9rem; margin: 0;">Cuando los clientes te contacten aparecerán aquí.</p>
+        </div>
+      <% } %>
+    </section>
+  </main>
+<!-- FIN MODIFICACION -->
+
+   <%- include('../partials/footer'); %>
+</body>
+</html>

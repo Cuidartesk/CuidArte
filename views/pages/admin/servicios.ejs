@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../../partials/head'); %>
+</head>
+<body>
+
+<!-- ============================================================
+     LISTA DE SERVICIOS (ADMIN)
+     Portado de admin_servicios.html del proyecto Django.
+     ============================================================ -->
+
+   <!-- INICIO MODIFICACION: header unificado igual al base.html de Django -->
+   <%- include('../../partials/header'); %>
+   <!-- FIN MODIFICACION -->
+
+  <section class="welcome-section">
+    <div class="container">
+      <h1>Lista de Servicios</h1>
+      <p>Gestiona los servicios de cuidado ofrecidos en la plataforma</p>
+    </div>
+  </section>
+
+  <main class="container" style="padding: 40px 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+      <p style="color: #6b7280; margin: 0;"><%= servicios.length %> servicio(s) registrado(s)</p>
+      <a href="/admin/servicios/nuevo" style="background: #27BEF5; color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; box-shadow: 0 2px 8px rgba(39,190,245,0.3);">+ Nuevo Servicio</a>
+    </div>
+
+    <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); overflow: hidden;">
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background: #f8fafc; text-align: left; border-bottom: 1px solid #e5e7eb;">
+              <th style="padding: 14px 16px; font-size: 0.85rem; color: #6b7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">T&iacute;tulo</th>
+              <th style="padding: 14px 16px; font-size: 0.85rem; color: #6b7280; font-weight: 600; text-transform: uppercase;">Precio</th>
+              <th style="padding: 14px 16px; font-size: 0.85rem; color: #6b7280; font-weight: 600; text-transform: uppercase;">Imagen</th>
+              <!-- INICIO MODIFICACION: columna Estado del taller, igual al Django -->
+              <th style="padding: 14px 16px; font-size: 0.85rem; color: #6b7280; font-weight: 600; text-transform: uppercase;">Estado</th>
+              <!-- FIN MODIFICACION -->
+              <th style="padding: 14px 16px; font-size: 0.85rem; color: #6b7280; font-weight: 600; text-transform: uppercase; text-align: center;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% servicios.forEach(function(s) { %>
+              <tr style="border-bottom: 1px solid #f3f4f6; transition: background 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                <td style="padding: 14px 16px; font-weight: 600; color: #1f2937;"><%= s.name %></td>
+                <td style="padding: 14px 16px; color: #374151;"><%= formatearPrecio(s.price) %></td>
+                <td style="padding: 14px 16px;">
+                  <% if (s.imageData) { %>
+                    <span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">Si</span>
+                  <% } else { %>
+                    <span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">No</span>
+                  <% } %>
+                </td>
+                <!-- INICIO MODIFICACION: celda Estado (Activo/Inactivo), igual al Django -->
+                <td style="padding: 14px 16px;">
+                  <% if (s.activo !== false) { %>
+                    <span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">Activo</span>
+                  <% } else { %>
+                    <span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">Inactivo</span>
+                  <% } %>
+                </td>
+                <!-- FIN MODIFICACION -->
+                <td style="padding: 14px 16px; text-align: center;">
+                  <a href="/admin/servicios/<%= s._id %>/editar" style="background: #e0f2fe; color: #0284c7; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 600; margin-right: 6px;">Editar</a>
+                  <!-- INICIO MODIFICACION: eliminar va en formulario POST -->
+                  <form method="POST" action="/admin/servicios/<%= s._id %>?_method=DELETE" style="display: inline;" onsubmit="return confirm('&iquest;Eliminar este servicio?');">
+                    <button type="submit" style="background: #fee2e2; color: #dc2626; padding: 6px 12px; border-radius: 8px; border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer;">Eliminar</button>
+                  </form>
+                  <!-- FIN MODIFICACION -->
+                </td>
+              </tr>
+            <% }); %>
+            <% if (servicios.length === 0) { %>
+              <tr><td colspan="5" style="padding: 40px; text-align: center; color: #9ca3af;">No hay servicios registrados a&uacute;n.</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+   <%- include('../../partials/footer'); %>
+</body>
+</html>

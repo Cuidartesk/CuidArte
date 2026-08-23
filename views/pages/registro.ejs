@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../partials/head'); %>
+</head>
+<body>
+
+   <%- include('../partials/header'); %>
+
+<!-- INICIO MODIFICACION: pagina de registro portada de registro.html de Django.
+     Rutas como en Django: /registro/cliente y /registro/cuidador -->
+  <section class="registro-hero">
+    <div class="registro-container-main">
+      <div class="registro-image">
+        <div class="registro-image-content">
+          <div class="welcome-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div class="registro-image-text">
+            <h2>¡Únete a CuidArte!</h2>
+            <p>Crea tu cuenta y accede a una plataforma completa de cuidado profesional.</p>
+            <div class="benefits-list">
+              <div class="benefit-item">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Acceso a especialistas certificados</span>
+              </div>
+              <div class="benefit-item">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Talleres y recursos exclusivos</span>
+              </div>
+              <div class="benefit-item">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Seguimiento personalizado 24/7</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="registro-form-wrapper">
+        <div class="registro-form-header">
+          <% if (tipo === 'cliente') { %>
+            <h2>Registro de Cliente</h2>
+            <p>Encuentra al cuidador ideal para ti</p>
+          <% } else if (tipo === 'cuidador') { %>
+            <h2>Registro de Cuidador</h2>
+            <p>Comienza tu carrera en cuidados</p>
+          <% } else { %>
+            <h2>Crear Cuenta</h2>
+            <p>Completa los datos para comenzar</p>
+          <% } %>
+        </div>
+
+        <form class="registro-form" method="post" action="<%= typeof rutaAccion !== 'undefined' ? rutaAccion : '/registro' %>">
+
+          <div class="form-group">
+            <label>Nombre *</label>
+            <input type="text" name="nombre" value="<%= valores.nombre || '' %>" required placeholder="Mínimo 3 letras, sin números">
+            <% if (errores.nombre) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.nombre %></p><% } %>
+          </div>
+          <div class="form-group">
+            <label>Apellido *</label>
+            <input type="text" name="apellido" value="<%= valores.apellido || '' %>" required placeholder="Mínimo 3 letras, sin números">
+            <% if (errores.apellido) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.apellido %></p><% } %>
+          </div>
+          <div class="form-group">
+            <label>Correo electrónico *</label>
+            <input type="email" name="correo" value="<%= valores.correo || '' %>" required placeholder="correo@ejemplo.com">
+            <% if (errores.correo) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.correo %></p><% } %>
+          </div>
+
+          <% if (tipo === 'cliente') { %>
+            <div class="form-group">
+              <label>Fecha de nacimiento *</label>
+              <input type="date" name="fechaNacimiento" value="<%= valores.fechaNacimiento || '' %>" required>
+              <small style="color: #666; font-size: 0.75rem;">Debes ser mayor de 18 años.</small>
+              <% if (errores.fechaNacimiento) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.fechaNacimiento %></p><% } %>
+            </div>
+          <% } %>
+
+          <% if (tipo === 'cuidador') { %>
+            <div class="form-group">
+              <label>Teléfono *</label>
+              <input type="text" name="telefono" value="<%= valores.telefono || '' %>" required placeholder="10 dígitos" maxlength="10">
+              <% if (errores.telefono) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.telefono %></p><% } %>
+            </div>
+            <div class="form-group">
+              <label>Fecha de nacimiento *</label>
+              <input type="date" name="fechaNacimiento" value="<%= valores.fechaNacimiento || '' %>" required>
+              <small style="color: #666; font-size: 0.75rem;">La edad se calcula automáticamente.</small>
+              <% if (errores.fechaNacimiento) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.fechaNacimiento %></p><% } %>
+            </div>
+            <div class="form-group">
+              <label>Especialidades *</label>
+              <select name="especialidades" required style="width: 100%; padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; background: #f9fafb;">
+                <option value="">Selecciona una especialidad</option>
+                <% ['Geriatría','Enfermería','Psicología','Fisioterapia','Nutrición','Cardiología','Oncología','Pediatría','Demencia','Discapacidad','Cuidados Paliativos','Terapia Ocupacional','Acompañamiento Terapéutico'].forEach(function(e) { %>
+                  <option value="<%= e %>" <%= valores.especialidades === e ? 'selected' : '' %>><%= e %><%= e === 'Psicología' ? ' / Salud Emocional' : e === 'Fisioterapia' ? ' / Terapia Física' : e === 'Demencia' ? ' / Alzheimer' : e === 'Discapacidad' ? ' y Movilidad' : '' %></option>
+                <% }); %>
+              </select>
+              <% if (errores.especialidades) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.especialidades %></p><% } %>
+            </div>
+            <div class="form-group">
+              <label>Experiencia *</label>
+              <textarea name="experiencia" rows="3" required placeholder="5 a 200 caracteres" maxlength="200"><%= valores.experiencia || '' %></textarea>
+              <small style="color: #666; font-size: 0.75rem;">Mínimo 5, máximo 200 caracteres.</small>
+              <% if (errores.experiencia) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.experiencia %></p><% } %>
+            </div>
+          <% } %>
+
+          <div class="form-group">
+            <label>Contraseña *</label>
+            <input type="password" name="password1" required>
+            <small style="color: #666; font-size: 0.75rem;">Debe tener al menos un número, una mayúscula y un carácter especial.</small>
+            <% if (errores.password1) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.password1 %></p><% } %>
+          </div>
+
+          <div class="form-group">
+            <label>Confirmar Contraseña *</label>
+            <input type="password" name="password2" required>
+            <% if (errores.password2) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.password2 %></p><% } %>
+          </div>
+
+          <!-- CAPTCHA SVG PROPIO (extra que no tiene Django): se valida en el servidor -->
+          <div class="form-group">
+            <label>Captcha de seguridad *</label>
+            <div class="captcha-caja">
+              <div id="captchaImagen"><%- captchaSvg %></div>
+              <button type="button" id="btnCaptcha" title="Generar nuevo captcha">&#x21bb;</button>
+            </div>
+            <input type="text" name="captcha" required maxlength="5" placeholder="Escribe el texto de la imagen" autocomplete="off" style="margin-top: 8px;">
+            <% if (errores.captcha) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.captcha %></p><% } %>
+          </div>
+
+          <div class="form-checkbox">
+            <input type="checkbox" id="terms" name="terminos" value="on" required>
+            <label for="terms">Acepto los <a href="#">términos y condiciones</a> *</label>
+          </div>
+          <% if (errores.terminos) { %><p style="color: #dc2626; font-size: 0.82rem; margin: -8px 0 10px 0;"><%= errores.terminos %></p><% } %>
+
+          <button type="submit" class="btn-primary"><span>Crear cuenta</span></button>
+        </form>
+
+        <div class="login-link">
+          <p>¿Ya tienes una cuenta? <a href="/ingresar">Inicia sesión</a></p>
+        </div>
+        <!-- INICIO MODIFICACION: volver al selector de tipo de cuenta (como en Django) -->
+        <div class="login-link" style="margin-top: 10px;">
+          <p><a href="/seleccionar-tipo">&larr; Elegir otro tipo de cuenta</a></p>
+        </div>
+        <!-- FIN MODIFICACION -->
+      </div>
+    </div>
+  </section>
+
+<script>
+// INICIO MODIFICACION: refresca el captcha pidiendo un nuevo SVG al servidor
+document.getElementById('btnCaptcha').addEventListener('click', async function () {
+  const r = await fetch('/captcha');
+  const data = await r.json();
+  document.getElementById('captchaImagen').innerHTML = data.svg;
+});
+// FIN MODIFICACION
+</script>
+
+   <%- include('../partials/footer'); %>
+</body>
+</html>
+<!-- FIN MODIFICACION -->

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../partials/head'); %>
+</head>
+<body>
+
+   <%- include('../partials/header'); %>
+
+<!-- INICIO MODIFICACION: carrito, portado de carrito.html de Django -->
+  <section class="welcome-section" style="padding: 40px 20px;">
+    <div class="container">
+      <h1>&#128722; Tu Carrito</h1>
+      <p>Revisa tus productos antes de comprar</p>
+    </div>
+  </section>
+
+  <main class="container" style="padding: 36px 20px; max-width: 900px;">
+    <% if (locals.mensaje) { %>
+      <div style="background: <%= mensaje.tipo === 'error' ? '#fee2e2; color: #991b1b; border: 1px solid #fecaca' : '#ecfdf5; color: #065f46; border: 1px solid #a7f3d0' %>; padding: 12px 16px; border-radius: 10px; margin-bottom: 16px;"><%= mensaje.texto %></div>
+    <% } %>
+
+    <% if (items.length > 0) { %>
+      <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); overflow: hidden;">
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="background: #f8fafc; border-bottom: 1px solid #e5e7eb; text-align: left;">
+                <th style="padding: 14px 16px; font-size: 0.85rem; color: #6b7280; font-weight: 600; text-transform: uppercase;">Producto</th>
+                <th style="padding: 14px 16px; font-size: 0.85rem; color: #6b7280; font-weight: 600; text-transform: uppercase;">Precio</th>
+                <th style="padding: 14px 16px; font-size: 0.85rem; color: #6b7280; font-weight: 600; text-transform: uppercase;">Cantidad</th>
+                <th style="padding: 14px 16px; font-size: 0.85rem; color: #6b7280; font-weight: 600; text-transform: uppercase;">Subtotal</th>
+                <th style="padding: 14px 16px; text-align: center;"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% items.forEach(function(item) { %>
+                <tr style="border-bottom: 1px solid #f3f4f6;">
+                  <td style="padding: 14px 16px;">
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                      <% if (item.producto.imageData) { %>
+                        <img src="<%= item.producto.imageData %>" alt="<%= item.producto.name %>" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover;">
+                      <% } %>
+                      <div>
+                        <p style="margin: 0; font-weight: 600; color: #1f2937;"><%= item.producto.name %></p>
+                        <p style="margin: 2px 0 0 0; color: #9ca3af; font-size: 0.82rem;">Stock: <%= item.producto.stock %></p>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="padding: 14px 16px; color: #374151;"><%= formatearPrecio(item.producto.price) %></td>
+                  <td style="padding: 14px 16px; color: #1f2937; font-weight: 600;"><%= item.cantidad %></td>
+                  <td style="padding: 14px 16px; color: #1f2937; font-weight: 700;"><%= formatearPrecio(item.subtotal) %></td>
+                  <td style="padding: 14px 16px; text-align: center;">
+                    <a href="/quitar-carrito/<%= item.producto._id %>" style="background: #fee2e2; color: #dc2626; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 0.82rem; font-weight: 600;">Quitar</a>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="padding: 20px; background: #f9fafb; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <p style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #1f2937;">Total: <%= formatearPrecio(total) %></p>
+          <div style="display: flex; gap: 10px;">
+            <a href="/tienda" style="background: #f3f4f6; color: #374151; padding: 10px 18px; border-radius: 10px; text-decoration: none; font-weight: 600;">Seguir comprando</a>
+            <a href="/comprar-carrito" style="background: linear-gradient(135deg, #27BEF5, #6DD5FA); color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 700; box-shadow: 0 4px 12px rgba(39,190,245,0.25);">Comprar</a>
+          </div>
+        </div>
+      </div>
+    <% } else { %>
+      <div style="background: white; border-radius: 16px; padding: 40px 20px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+        <p style="color: #6b7280; font-weight: 600; margin: 0 0 8px 0;">Tu carrito est&aacute; vac&iacute;o</p>
+        <p style="color: #9ca3af; font-size: 0.9rem; margin: 0 0 16px 0;">Agrega productos desde la tienda para verlos aqu&iacute;.</p>
+        <a href="/tienda" style="background: #27BEF5; color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 700;">Ir a la tienda</a>
+      </div>
+    <% } %>
+  </main>
+<!-- FIN MODIFICACION -->
+
+   <%- include('../partials/footer'); %>
+</body>
+</html>

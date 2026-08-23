@@ -1,0 +1,166 @@
+<!-- ============================================================
+     HEADER UNIFICADO (portado del base.html de Django)
+     - Invitado:      Inicio | Contactanos | Sobre | Servicios | Tienda + Ingresar
+     - Admin logueado: Inicio(panel) | Ver Sitio | Perfil + nombre y dropdown
+       (igual que Django: al darle "Ver Sitio" el menu del panel NO cambia)
+     ============================================================ -->
+<header class="header-dashboard">
+    <div class="logo-container">
+        <img src="/assets/image/logo.png" alt="Logo de CuidArte" class="logo-img">
+        <div class="logo-text">CuidArte</div>
+    </div>
+
+    <nav>
+        <% if (locals.usuario && usuario.role === 'admin') { %>
+            <a href="/admin" class="<%= currentPath === '/admin' ? 'active' : '' %>">Inicio</a>
+            <a href="/" class="<%= currentPath === '/' ? 'active' : '' %>">Ver Sitio</a>
+            <a href="/admin/perfil" class="<%= currentPath.indexOf('/admin/perfil') === 0 ? 'active' : '' %>">Perfil</a>
+        <% } else if (locals.usuario && usuario.role === 'cuidador') { %>
+            <!-- INICIO MODIFICACION: menu del cuidador, igual al base.html de Django -->
+            <a href="/dashboard-cuidador" class="<%= currentPath === '/dashboard-cuidador' ? 'active' : '' %>">Inicio</a>
+            <a href="/solicitudes" class="<%= currentPath === '/solicitudes' ? 'active' : '' %>">Solicitudes</a>
+            <a href="/clientes" class="<%= currentPath === '/clientes' ? 'active' : '' %>">Clientes</a>
+            <a href="/perfil-cuidador" class="<%= currentPath.indexOf('/perfil-cuidador') === 0 || currentPath.indexOf('/editar-perfil-cuidador') === 0 ? 'active' : '' %>">Perfil</a>
+            <!-- FIN MODIFICACION -->
+        <% } else if (locals.usuario && usuario.role === 'cliente') { %>
+            <!-- INICIO MODIFICACION: menu del cliente IDENTICO al base.html de Django,
+                 con badge del carrito en Tienda -->
+            <a href="/dashboard-cliente" class="<%= currentPath === '/dashboard-cliente' ? 'active' : '' %>">Inicio</a>
+            <a href="/buscar-cuidadores" class="<%= currentPath === '/buscar-cuidadores' ? 'active' : '' %>">Buscar Cuidadores</a>
+            <a href="/mis-reservas" class="<%= currentPath === '/mis-reservas' ? 'active' : '' %>" style="position: relative;">Mis Reservas</a>
+            <a href="/mis-agendas" class="<%= currentPath === '/mis-agendas' ? 'active' : '' %>">Mis Agendas</a>
+            <a href="/tienda" class="<%= currentPath === '/tienda' ? 'active' : '' %>" style="position: relative;">Tienda <% if (carritoCount > 0) { %><span style="position: absolute; top: -8px; right: -10px; background: #ef4444; color: white; font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 10px; min-width: 18px; text-align: center;"><%= carritoCount %></span><% } %></a>
+            <a href="/mi-perfil" class="<%= currentPath === '/mi-perfil' ? 'active' : '' %>">Mi Perfil</a>
+            <!-- FIN MODIFICACION -->
+        <% } else { %>
+            <a href="/" class="<%= currentPath === '/' ? 'active' : '' %>">Inicio</a>
+            <a href="/contactanos" class="<%= currentPath === '/contactanos' ? 'active' : '' %>">Cont&aacute;ctanos</a>
+            <a href="/sobre" class="<%= currentPath === '/sobre' ? 'active' : '' %>">Sobre Nosotros</a>
+            <a href="/servicios" class="<%= currentPath === '/servicios' ? 'active' : '' %>">Servicios</a>
+            <a href="/tienda" class="<%= currentPath === '/tienda' ? 'active' : '' %>">Tienda</a>
+        <% } %>
+    </nav>
+
+    <% if (locals.usuario) { %>
+        <!-- INICIO MODIFICACION: bloque de perfil del lado derecho, igual al Django -->
+        <div class="user-profile-container">
+            <div class="user-profile" onclick="toggleProfileMenu()">
+                <div class="user-avatar-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <!-- INICIO MODIFICACION: se muestra nombre Y apellido, igual que get_full_name de Django -->
+                <span class="user-name"><%= usuario.name %> <%= usuario.apellido || '' %></span>
+                <!-- FIN MODIFICACION -->
+                <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </div>
+
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="dropdown-header">
+                    <div class="dropdown-user-info">
+                        <div class="dropdown-avatar-placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="dropdown-username"><%= usuario.name %> <%= usuario.apellido || '' %></p>
+                            <p class="dropdown-email"><%= usuario.email %></p>
+                            <% if (usuario.role === 'admin') { %>
+                                <span style="display: inline-block; margin-top: 4px; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.3px;">ADMINISTRADOR</span>
+                            <% } else if (usuario.role === 'cuidador') { %>
+                                <span style="display: inline-block; margin-top: 4px; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.3px;">CUIDADOR</span>
+                            <% } else { %>
+                                <span style="display: inline-block; margin-top: 4px; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.3px;">CLIENTE</span>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dropdown-divider"></div>
+
+                <% if (usuario.role === 'admin') { %>
+                    <a href="/admin" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Dashboard
+                    </a>
+                <% } else if (usuario.role === 'cuidador') { %>
+                    <!-- INICIO MODIFICACION: dashboard del cuidador en el dropdown -->
+                    <a href="/dashboard-cuidador" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <!-- FIN MODIFICACION -->
+                <% } else { %>
+                    <!-- INICIO MODIFICACION: dashboard del cliente en el dropdown, igual que Django -->
+                    <a href="/dashboard-cliente" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <!-- FIN MODIFICACION -->
+                <% } %>
+
+                <!-- INICIO MODIFICACION: Mi Perfil apunta al perfil de cada rol, igual que Django -->
+                <a href="<%= usuario.role === 'admin' ? '/admin/perfil' : (usuario.role === 'cuidador' ? '/perfil-cuidador' : '/mi-perfil') %>" class="dropdown-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    Mi Perfil
+                </a>
+
+                <div class="dropdown-divider"></div>
+
+                <a href="/logout" class="dropdown-item dropdown-item-danger">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Cerrar Sesi&oacute;n
+                </a>
+            </div>
+        </div>
+        <!-- FIN MODIFICACION -->
+    <% } else { %>
+        <a href="/ingresar" class="btn-ingresar">Ingresar</a>
+    <% } %>
+</header>
+
+<script>
+    function toggleProfileMenu() {
+        const dropdown = document.getElementById('profileDropdown');
+        if (dropdown) {
+            dropdown.classList.toggle('show');
+        }
+    }
+
+    window.onclick = function(event) {
+        if (!event.target.matches('.user-profile') && !event.target.closest('.user-profile')) {
+            const dropdown = document.getElementById('profileDropdown');
+            if (dropdown && dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+        }
+    };
+</script>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../partials/head'); %>
+</head>
+<body>
+
+   <%- include('../partials/header'); %>
+
+<!-- INICIO MODIFICACION: ficha del cuidador, portada de ver_cuidador.html de Django -->
+  <section class="welcome-section">
+    <div class="container">
+      <h1>Perfil del Cuidador</h1>
+      <p>Conoce a tu profesional antes de contactarlo</p>
+    </div>
+  </section>
+
+  <main class="container" style="padding: 36px 20px; max-width: 860px;">
+    <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); overflow: hidden; display: flex; flex-wrap: wrap;">
+      <div style="flex: 0 0 260px; min-height: 260px; background: #f3f4f6; display: flex; align-items: center; justify-content: center;">
+        <% if (c.foto) { %>
+          <img src="<%= c.foto %>" alt="<%= c.name %>" style="width: 100%; height: 100%; object-fit: cover;">
+        <% } else { %>
+          <img src="/assets/image/user1.png" alt="Cuidador" style="width: 100%; height: 100%; object-fit: cover;">
+        <% } %>
+      </div>
+      <div style="flex: 1; min-width: 260px; padding: 24px;">
+        <h2 style="margin: 0; font-size: 1.4rem; color: #1f2937; font-weight: 800;"><%= c.name %> <%= c.apellido || '' %></h2>
+        <p style="margin: 6px 0 14px 0; color: #0284c7; font-weight: 700;"><%= c.especialidades || c.especialidad || 'Cuidador profesional' %></p>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+          <% if (c.edad) { %><span style="background: #fef3c7; color: #92400e; padding: 5px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 700;"><%= c.edad %> a&ntilde;os</span><% } %>
+          <% if (c.direccion) { %><span style="background: #f3f4f6; color: #6b7280; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem;">&#128205; <%= c.direccion %></span><% } %>
+          <% if (c.cedula) { %><span style="background: #dcfce7; color: #166534; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;">&#10003; Verificado</span><% } %>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; justify-content: space-between; padding: 11px 14px; background: #f9fafb; border-radius: 10px;">
+            <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Experiencia</span>
+            <span style="color: #374151; font-size: 0.9rem;"><%= c.experiencia || 'No especificada' %></span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 11px 14px; background: #f9fafb; border-radius: 10px;">
+            <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Tel&eacute;fono</span>
+            <span style="color: #374151; font-size: 0.9rem;"><%= c.telefono || 'No especificado' %></span>
+          </div>
+        </div>
+
+        <form method="post" action="/contactar-cuidador/<%= c._id %>" style="margin-top: 18px;">
+          <% if (yaContactado) { %>
+            <button type="button" disabled style="width: 100%; background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; padding: 12px; border-radius: 10px; font-weight: 700; cursor: default;">&check; Solicitud ya enviada</button>
+          <% } else { %>
+            <button type="submit" style="width: 100%; background: linear-gradient(135deg, #27BEF5, #6DD5FA); color: white; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">Contactar cuidador</button>
+          <% } %>
+        </form>
+        <a href="/buscar-cuidadores" style="display: block; text-align: center; margin-top: 10px; color: #0284c7; text-decoration: none; font-weight: 600; font-size: 0.88rem;">&larr; Volver a la b&uacute;squeda</a>
+      </div>
+    </div>
+  </main>
+<!-- FIN MODIFICACION -->
+
+   <%- include('../partials/footer'); %>
+</body>
+</html>

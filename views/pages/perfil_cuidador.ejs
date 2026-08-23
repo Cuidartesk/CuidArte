@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../partials/head'); %>
+</head>
+<body>
+
+   <%- include('../partials/header'); %>
+
+<!-- INICIO MODIFICACION: perfil profesional del cuidador, portado de perfil_cuidador.html de Django -->
+  <section class="welcome-section">
+    <div class="container">
+      <h1>Mi Perfil Profesional</h1>
+      <p>Gestiona tu presentación como cuidador para generar confianza en los clientes</p>
+    </div>
+  </section>
+
+  <main class="container" style="padding: 36px 20px; max-width: 980px;">
+    <% if (mensaje) { %>
+      <div style="background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; padding: 12px 16px; border-radius: 10px; margin-bottom: 18px;"><%= mensaje %></div>
+    <% } %>
+
+    <!-- Cabecera resumen -->
+    <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 24px; display: flex; gap: 22px; align-items: center; margin-bottom: 22px; flex-wrap: wrap;">
+      <div style="width: 84px; height: 84px; border-radius: 50%; overflow: hidden; background: #f3f4f6; flex-shrink: 0; border: 3px solid #e0f2fe;">
+        <% if (usuario.foto) { %>
+          <img src="<%= usuario.foto %>" alt="Foto de perfil" style="width: 100%; height: 100%; object-fit: cover;">
+        <% } else { %>
+          <!-- INICIO MODIFICACION: icono de persona cuando no hay foto (no existe user1.png) -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" style="width: 100%; height: 100%; padding: 18px;">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <!-- FIN MODIFICACION -->
+        <% } %>
+      </div>
+      <div style="flex: 1; min-width: 220px;">
+        <h2 style="margin: 0; font-size: 1.4rem; color: #1f2937; font-weight: 800;"><%= usuario.name %> <%= usuario.apellido %></h2>
+        <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 0.92rem;">@<%= usuario.usuario || (usuario.email || '').split('@')[0] %> · <%= usuario.email || 'Sin correo' %></p>
+        <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+          <% if (usuario.especialidades) { %>
+            <span style="background: #e0f2fe; color: #0369a1; padding: 5px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 700;"><%= usuario.especialidades.substring(0, 30) %></span>
+          <% } else { %>
+            <span style="background: #fef3c7; color: #92400e; padding: 5px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 700;">Perfil por completar</span>
+          <% } %>
+          <% if (usuario.cedula) { %>
+            <span style="background: #dcfce7; color: #166534; padding: 5px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;">&check; Verificado</span>
+          <% } %>
+          <% if (usuario.direccion) { %>
+            <span style="background: #f3f4f6; color: #6b7280; padding: 5px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;">&#128205; <%= usuario.direccion %></span>
+          <% } %>
+        </div>
+      </div>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="/editar-perfil-cuidador" style="background: linear-gradient(135deg, #27BEF5, #6DD5FA); color: white; padding: 10px 16px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(39,190,245,0.25);">Editar perfil</a>
+        <a href="/dashboard-cuidador" style="background: #f3f4f6; color: #374151; padding: 10px 16px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 0.9rem;">Dashboard</a>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <!-- Información personal -->
+      <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 22px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h3 style="margin: 0; font-size: 1.02rem; font-weight: 700; color: #1f2937; display: flex; align-items: center; gap: 8px;"><span style="width: 8px; height: 8px; background: #27BEF5; border-radius: 50%; display: inline-block;"></span>Información Personal</h3>
+          <a href="/editar-perfil-cuidador" style="color: #0284c7; text-decoration: none; font-weight: 600; font-size: 0.85rem;">Editar &rarr;</a>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; padding: 10px 12px; background: #f9fafb; border-radius: 10px;">
+            <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Nombre completo</span>
+            <span style="color: #1f2937; font-weight: 600; font-size: 0.92rem;"><%= usuario.name %> <%= usuario.apellido %></span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 10px 12px; background: #f9fafb; border-radius: 10px;">
+            <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Email</span>
+            <span style="color: #374151; font-size: 0.9rem;"><%= usuario.email || '—' %></span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 10px 12px; background: #f9fafb; border-radius: 10px;">
+            <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">&#128222; Teléfono</span>
+            <span style="color: #374151; font-size: 0.9rem;"><%= usuario.telefono || 'No especificado' %></span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 10px 12px; background: #f9fafb; border-radius: 10px;">
+            <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">&#128205; Ciudad</span>
+            <span style="color: #374151; font-size: 0.9rem;"><%= usuario.direccion || 'No especificado' %></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información profesional -->
+      <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 22px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h3 style="margin: 0; font-size: 1.02rem; font-weight: 700; color: #1f2937; display: flex; align-items: center; gap: 8px;"><span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: inline-block;"></span>Información Profesional</h3>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; padding: 10px 12px; background: #f9fafb; border-radius: 10px;">
+            <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">&#127891; Especialidad</span>
+            <span style="color: #374151; font-size: 0.9rem; font-weight: 600; text-align: right; max-width: 55%;"><%= usuario.especialidades || 'No especificado' %></span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 10px 12px; background: #f9fafb; border-radius: 10px;">
+            <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">&#129703; Cédula</span>
+            <span style="color: #374151; font-size: 0.9rem;"><%= usuario.cedula || 'No especificado' %></span>
+          </div>
+          <div style="padding: 12px; background: #f9fafb; border-radius: 10px;">
+            <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600; display: block; margin-bottom: 6px;">&#128221; Experiencia y descripción</span>
+            <p style="margin: 0; color: #374151; font-size: 0.92rem; line-height: 1.5; white-space: pre-wrap;"><%= usuario.experiencia || 'Aún no has agregado una descripción. Cuéntale a los clientes sobre tu experiencia y enfoque de cuidado.' %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p style="text-align: center; color: #9ca3af; font-size: 0.85rem; margin-top: 18px;">Mantén tu perfil actualizado para aparecer en las búsquedas de clientes.</p>
+  </main>
+
+  <style>
+    @media (max-width: 780px) {
+      div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+    }
+  </style>
+<!-- FIN MODIFICACION -->
+
+   <%- include('../partials/footer'); %>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../../partials/head'); %>
+</head>
+<body>
+
+<!-- ============================================================
+     PERFIL DE ADMINISTRADOR (ADMIN)
+     Portado de admin_perfil.html del proyecto Django.
+     ============================================================ -->
+
+   <!-- INICIO MODIFICACION: header unificado igual al base.html de Django -->
+   <%- include('../../partials/header'); %>
+   <!-- FIN MODIFICACION -->
+
+  <section class="welcome-section">
+    <div class="container">
+      <h1>Perfil de Administrador</h1>
+      <p>Informaci&oacute;n de tu cuenta administrativa</p>
+    </div>
+  </section>
+
+  <main class="container" style="padding: 36px 20px; max-width: 780px;">
+
+    <!-- Tarjeta resumen -->
+    <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 28px; display: flex; gap: 22px; align-items: center; margin-bottom: 22px; flex-wrap: wrap;">
+      <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #27BEF5, #6DD5FA); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem; font-weight: 800; flex-shrink: 0;">
+        <%= usuario.name.charAt(0).toUpperCase() %>
+      </div>
+      <div style="flex: 1; min-width: 200px;">
+        <h2 style="margin: 0; font-size: 1.3rem; color: #1f2937; font-weight: 700;"><%= usuario.name %> <%= usuario.apellido || '' %></h2>
+        <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 0.92rem;"><%= usuario.email %></p>
+        <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <span style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.3px;">ADMINISTRADOR</span>
+          <% var fechaCreacion = new Date(usuario.createdAt || Date.now()); %>
+          <span style="background: #f3f4f6; color: #6b7280; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;">Miembro desde <%= ('0' + fechaCreacion.getDate()).slice(-2) %>/<%= ('0' + (fechaCreacion.getMonth() + 1)).slice(-2) %>/<%= fechaCreacion.getFullYear() %></span>
+        </div>
+      </div>
+      <a href="/admin" style="background: #f3f4f6; color: #374151; padding: 10px 16px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 0.9rem; white-space: nowrap;">&larr; Panel</a>
+    </div>
+
+    <!-- Información detallada -->
+    <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 24px;">
+      <h3 style="margin: 0 0 16px 0; font-size: 1.02rem; font-weight: 700; color: #1f2937; display: flex; align-items: center; gap: 8px;"><span style="width: 8px; height: 8px; background: #27BEF5; border-radius: 50%;"></span>Informaci&oacute;n de la cuenta</h3>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; justify-content: space-between; padding: 11px 14px; background: #f9fafb; border-radius: 10px;">
+          <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Nombre completo</span>
+          <span style="color: #1f2937; font-weight: 600; font-size: 0.92rem;"><%= usuario.name %> <%= usuario.apellido || '' %></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 11px 14px; background: #f9fafb; border-radius: 10px;">
+          <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Usuario</span>
+          <span style="color: #374151; font-size: 0.9rem;"><%= usuario.usuario || '—' %></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 11px 14px; background: #f9fafb; border-radius: 10px;">
+          <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Correo electr&oacute;nico</span>
+          <span style="color: #374151; font-size: 0.9rem;"><%= usuario.email %></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 11px 14px; background: #f9fafb; border-radius: 10px;">
+          <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Rol</span>
+          <span style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;">ADMINISTRADOR</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 11px 14px; background: #f9fafb; border-radius: 10px;">
+          <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Fecha de nacimiento</span>
+          <span style="color: #374151; font-size: 0.9rem;">
+            <% if (usuario.fechaNacimiento) { %>
+              <% var fn = new Date(usuario.fechaNacimiento); %>
+              <%= ('0' + fn.getUTCDate()).slice(-2) %>/<%= ('0' + (fn.getUTCMonth() + 1)).slice(-2) %>/<%= fn.getUTCFullYear() %>
+            <% } else { %>&mdash;<% } %>
+          </span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 11px 14px; background: #f9fafb; border-radius: 10px;">
+          <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Miembro desde</span>
+          <span style="color: #374151; font-size: 0.9rem;"><%= ('0' + fechaCreacion.getDate()).slice(-2) %>/<%= ('0' + (fechaCreacion.getMonth() + 1)).slice(-2) %>/<%= fechaCreacion.getFullYear() %> <%= ('0' + fechaCreacion.getHours()).slice(-2) %>:<%= ('0' + fechaCreacion.getMinutes()).slice(-2) %></span>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <a href="/admin/perfil/editar" style="background: linear-gradient(135deg, #27BEF5, #6DD5FA); color: white; padding: 10px 22px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 0.92rem; box-shadow: 0 4px 12px rgba(39,190,245,0.25); display: inline-block;">Editar</a>
+      </div>
+    </div>
+  </main>
+
+   <%- include('../../partials/footer'); %>
+</body>
+</html>

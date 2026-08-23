@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../partials/head'); %>
+</head>
+<body>
+
+   <%- include('../partials/header'); %>
+
+<!-- INICIO MODIFICACION: mi perfil del cliente, portado de mi_perfil.html de Django -->
+  <section class="welcome-section">
+    <div class="container">
+      <h1>Mi Perfil</h1>
+      <p>Administra tu informaci&oacute;n personal y tu experiencia en CuidArte</p>
+    </div>
+  </section>
+
+  <main class="container" style="padding: 36px 20px; max-width: 760px;">
+    <!-- Cabecera -->
+    <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 26px; display: flex; gap: 20px; align-items: center; margin-bottom: 22px; flex-wrap: wrap;">
+      <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: #f3f4f6; flex-shrink: 0; border: 3px solid #e0f2fe;">
+        <% if (usuario.foto) { %>
+          <img src="<%= usuario.foto %>" alt="Foto de perfil" style="width: 100%; height: 100%; object-fit: cover;">
+        <% } else { %>
+          <img src="/assets/image/user2.png" alt="Foto de perfil" style="width: 100%; height: 100%; object-fit: cover;">
+        <% } %>
+      </div>
+      <div style="flex: 1; min-width: 200px;">
+        <h2 style="margin: 0; font-size: 1.35rem; color: #1f2937; font-weight: 800;"><%= usuario.name %> <%= usuario.apellido || '' %></h2>
+        <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 0.92rem;"><%= usuario.email || 'Sin correo' %></p>
+        <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <span style="background: #dcfce7; color: #166534; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;">CLIENTE</span>
+          <% if (usuario.direccion) { %>
+            <span style="background: #f3f4f6; color: #6b7280; padding: 5px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;">&#128205; <%= usuario.direccion %></span>
+          <% } %>
+          <% if (usuario.createdAt) { %>
+            <span style="background: #f3f4f6; color: #6b7280; padding: 5px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;">Miembro desde <%= new Date(usuario.createdAt).toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' }) %></span>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Informacion personal -->
+    <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 24px;">
+      <h3 style="margin: 0 0 16px 0; font-size: 1.02rem; font-weight: 700; color: #1f2937; display: flex; align-items: center; gap: 8px;"><span style="width: 8px; height: 8px; background: #27BEF5; border-radius: 50%; display: inline-block;"></span>Informaci&oacute;n Personal</h3>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; justify-content: space-between; padding: 11px 14px; background: #f9fafb; border-radius: 10px;">
+          <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Nombre completo</span>
+          <span style="color: #1f2937; font-weight: 600; font-size: 0.92rem;"><%= usuario.name %> <%= usuario.apellido || '' %></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 11px 14px; background: #f9fafb; border-radius: 10px;">
+          <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Email</span>
+          <span style="color: #374151; font-size: 0.9rem;"><%= usuario.email || 'No especificado' %></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 11px 14px; background: #f9fafb; border-radius: 10px;">
+          <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">&#128222; Tel&eacute;fono</span>
+          <span style="color: #374151; font-size: 0.9rem;"><%= usuario.telefono || 'No especificado' %></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 11px 14px; background: #f9fafb; border-radius: 10px;">
+          <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Fecha de nacimiento</span>
+          <span style="color: #374151; font-size: 0.9rem;"><%= usuario.fechaNacimiento ? new Date(usuario.fechaNacimiento).toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'No especificado' %></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 11px 14px; background: #f9fafb; border-radius: 10px;">
+          <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Ciudad</span>
+          <span style="color: #374151; font-size: 0.9rem;"><%= usuario.direccion || 'No especificado' %></span>
+        </div>
+      </div>
+    </div>
+  </main>
+<!-- FIN MODIFICACION -->
+
+   <%- include('../partials/footer'); %>
+</body>
+</html>

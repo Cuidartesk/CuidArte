@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../partials/head'); %>
+</head>
+<body>
+
+   <%- include('../partials/header'); %>
+
+<!-- INICIO MODIFICACION: mis reservas del cliente, portado de mis_reservas.html de Django -->
+  <main class="dashboard-content">
+    <section class="welcome-section">
+      <div class="container">
+        <h1>Mis Reservas</h1>
+        <p style="margin-bottom: 10px;">Las solicitudes de cuidado que has enviado</p>
+      </div>
+    </section>
+
+    <section class="dashboard-main container">
+      <% if (solicitudes.length > 0) { %>
+        <p style="color: #6b7280; margin-bottom: 16px;"><%= solicitudes.length %> reserva(s)</p>
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <% solicitudes.forEach(function(s) { const cg = s.cuidador || {}; %>
+            <div style="background: white; border-radius: 16px; padding: 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #f3f4f6;">
+              <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 10px;">
+                <div>
+                  <h3 style="margin: 0; font-size: 1.05rem; color: #1f2937;"><%= cg.name || 'Cuidador' %> <%= cg.apellido || '' %></h3>
+                  <% if (s.servicio) { %>
+                    <p style="margin: 4px 0 0 0; color: #0ea5e9; font-size: 0.85rem; font-weight: 600;"><%= s.servicio %></p>
+                  <% } %>
+                  <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 0.88rem;"><%= new Date(s.createdAt).toLocaleString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></p>
+                  <% if (s.mensaje) { %>
+                    <p style="margin: 8px 0 0 0; color: #374151; background: #f9fafb; padding: 10px 14px; border-radius: 10px; white-space: pre-wrap;"><%= s.mensaje %></p>
+                  <% } %>
+                </div>
+                <span style="background: <%= s.estado === 'pendiente' ? '#fef3c7; color: #92400e' : (s.estado === 'aceptada' ? '#dcfce7; color: #166534' : '#fee2e2; color: #991b1b') %>; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: capitalize;"><%= s.estado %></span>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <div style="background: white; border-radius: 16px; padding: 40px 20px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+          <p style="color: #6b7280; font-weight: 600; margin: 0 0 8px 0;">No tienes reservas</p>
+          <p style="color: #9ca3af; font-size: 0.9rem; margin: 0;">Cuando env&iacute;es una solicitud a un cuidador aparecer&aacute; aqu&iacute;.</p>
+        </div>
+      <% } %>
+    </section>
+  </main>
+<!-- FIN MODIFICACION -->
+
+   <%- include('../partials/footer'); %>
+</body>
+</html>

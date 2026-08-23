@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../../partials/head'); %>
+</head>
+<body>
+
+<!-- ============================================================
+     LISTA DE PRODUCTOS (ADMIN)
+     Portado de admin_productos.html del proyecto Django:
+     tabla con Titulo, Categoria, Precio, Stock, Estado y Acciones.
+     ============================================================ -->
+
+   <!-- INICIO MODIFICACION: header unificado igual al base.html de Django -->
+   <%- include('../../partials/header'); %>
+   <!-- FIN MODIFICACION -->
+
+  <section class="welcome-section">
+    <div class="container">
+      <h1>Lista de Productos</h1>
+      <p>Administra el cat&aacute;logo y el stock de la tienda</p>
+    </div>
+  </section>
+
+  <main class="container" style="padding: 40px 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+      <p style="color: #6b7280; margin: 0;"><%= productos.length %> producto(s) en cat&aacute;logo</p>
+      <a href="/admin/productos/nuevo" style="background: #27BEF5; color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; box-shadow: 0 2px 8px rgba(39,190,245,0.3);">+ Nuevo Producto</a>
+    </div>
+
+    <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); overflow: hidden;">
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background: #f8fafc; border-bottom: 1px solid #e5e7eb; text-align: left;">
+              <th style="padding: 14px 16px; font-size: 0.85rem; color: #6b7280; font-weight: 600; text-transform: uppercase;">T&iacute;tulo</th>
+              <th style="padding: 14px 16px; font-size: 0.85rem; color: #6b7280; font-weight: 600; text-transform: uppercase;">Categor&iacute;a</th>
+              <th style="padding: 14px 16px; font-size: 0.85rem; color: #6b7280; font-weight: 600; text-transform: uppercase;">Precio</th>
+              <th style="padding: 14px 16px; font-size: 0.85rem; color: #6b7280; font-weight: 600; text-transform: uppercase;">Stock</th>
+              <th style="padding: 14px 16px; font-size: 0.85rem; color: #6b7280; font-weight: 600; text-transform: uppercase;">Imagen</th>
+              <!-- INICIO MODIFICACION: columna Estado, igual al Django -->
+              <th style="padding: 14px 16px; font-size: 0.85rem; color: #6b7280; font-weight: 600; text-transform: uppercase;">Estado</th>
+              <!-- FIN MODIFICACION -->
+              <th style="padding: 14px 16px; font-size: 0.85rem; color: #6b7280; font-weight: 600; text-transform: uppercase; text-align: center;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% productos.forEach(function(p) { %>
+              <tr style="border-bottom: 1px solid #f3f4f6;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                <td style="padding: 14px 16px; font-weight: 600; color: #1f2937;"><%= p.name %></td>
+                <td style="padding: 14px 16px; color: #6b7280; font-size: 0.9rem; text-transform: capitalize;"><%= p.category %></td>
+                <td style="padding: 14px 16px; color: #374151;"><%= formatearPrecio(p.price) %></td>
+                <td style="padding: 14px 16px;">
+                  <% if (p.stock === 0) { %>
+                    <span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">Sin stock</span>
+                  <% } else if (p.stock < 5) { %>
+                    <span style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;"><%= p.stock %> - Bajo</span>
+                  <% } else { %>
+                    <span style="color: #374151; font-weight: 600;"><%= p.stock %></span>
+                  <% } %>
+                </td>
+                <td style="padding: 14px 16px;">
+                  <% if (p.imageData) { %>
+                    <span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">Si</span>
+                  <% } else { %>
+                    <span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">No</span>
+                  <% } %>
+                </td>
+                <!-- INICIO MODIFICACION: celda Estado (Activo/Inactivo), igual al Django -->
+                <td style="padding: 14px 16px;">
+                  <% if (p.activo !== false) { %>
+                    <span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">Activo</span>
+                  <% } else { %>
+                    <span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">Inactivo</span>
+                  <% } %>
+                </td>
+                <!-- FIN MODIFICACION -->
+                <td style="padding: 14px 16px; text-align: center;">
+                  <a href="/admin/productos/<%= p._id %>/editar" style="background: #e0f2fe; color: #0284c7; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 600; margin-right: 6px;">Editar</a>
+                  <!-- INICIO MODIFICACION: eliminar va en formulario POST -->
+                  <form method="POST" action="/admin/productos/<%= p._id %>?_method=DELETE" style="display: inline;" onsubmit="return confirm('&iquest;Eliminar este producto?');">
+                    <button type="submit" style="background: #fee2e2; color: #dc2626; padding: 6px 12px; border-radius: 8px; border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer;">Eliminar</button>
+                  </form>
+                  <!-- FIN MODIFICACION -->
+                </td>
+              </tr>
+            <% }); %>
+            <% if (productos.length === 0) { %>
+              <tr><td colspan="7" style="padding: 40px; text-align: center; color: #9ca3af;">No hay productos registrados a&uacute;n.</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+   <%- include('../../partials/footer'); %>
+</body>
+</html>

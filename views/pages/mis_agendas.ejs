@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../partials/head'); %>
+</head>
+<body>
+
+   <%- include('../partials/header'); %>
+
+<!-- INICIO MODIFICACION: mis agendas (modulo de agenda aun no portado de Django) -->
+  <section class="welcome-section">
+    <div class="container">
+      <h1>Mis Agendas</h1>
+      <p>Tus visitas programadas con cuidadores</p>
+    </div>
+  </section>
+
+  <main class="container" style="padding: 36px 20px;">
+    <div class="construccion-box">
+      <div class="construccion-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+      </div>
+      <h2>M&oacute;dulo en construcci&oacute;n</h2>
+      <p>La agenda de visitas estar&aacute; disponible pronto.</p>
+      <a href="/dashboard-cliente" class="btn-primary">Volver al inicio</a>
+    </div>
+  </main>
+<!-- FIN MODIFICACION -->
+
+   <%- include('../partials/footer'); %>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../partials/head'); %>
+</head>
+<body>
+
+   <%- include('../partials/header'); %>
+
+<!-- INICIO MODIFICACION: pagina para elegir tipo de cuenta, portada de seleccionar_tipo.html de Django -->
+  <section class="seleccion-hero">
+    <div class="seleccion-container">
+      <div class="seleccion-header">
+        <h1>&iquest;C&oacute;mo deseas unirte a CuidArte?</h1>
+        <p>Selecciona el tipo de cuenta que mejor se ajuste a tus necesidades</p>
+      </div>
+
+      <div class="tipos-container">
+        <!-- Card Cliente -->
+        <a href="/registro/cliente" class="tipo-card">
+          <div class="tipo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+          </div>
+          <h2>Busco Cuidador</h2>
+          <p>Encuentra profesionales certificados para el cuidado que necesitas</p>
+          <ul class="tipo-beneficios">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Acceso a cuidadores verificados
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Reserva f&aacute;cil y r&aacute;pida
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Seguimiento 24/7
+            </li>
+          </ul>
+          <div class="tipo-btn">
+            <span>Registrarme como Cliente</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </div>
+        </a>
+
+        <!-- Card Cuidador -->
+        <a href="/registro/cuidador" class="tipo-card tipo-card-cuidador">
+          <div class="tipo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+            </svg>
+          </div>
+          <h2>Soy Cuidador</h2>
+          <p>Ofrece tus servicios profesionales y conecta con clientes</p>
+          <ul class="tipo-beneficios">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Gestiona tu agenda
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Certificaci&oacute;n profesional
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Plataforma de confianza
+            </li>
+          </ul>
+          <div class="tipo-btn">
+            <span>Registrarme como Cuidador</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </div>
+        </a>
+      </div>
+
+      <div class="seleccion-footer">
+        <p>&iquest;Ya tienes una cuenta? <a href="/ingresar">Inicia sesi&oacute;n aqu&iacute;</a></p>
+      </div>
+    </div>
+  </section>
+<!-- FIN MODIFICACION -->
+
+   <%- include('../partials/footer'); %>
+</body>
+</html>

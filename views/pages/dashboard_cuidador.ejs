@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../partials/head'); %>
+</head>
+<body>
+
+   <%- include('../partials/header'); %>
+
+<!-- INICIO MODIFICACION: dashboard del cuidador, portado de dashboard_cuidador.html de Django -->
+  <main class="dashboard-content">
+    <section class="welcome-section">
+      <div class="container">
+        <h1>Bienvenido, <%= usuario.name %> <%= usuario.apellido %></h1>
+        <p style="margin-bottom: 10px;">Gestiona tus solicitudes, clientes y perfil desde aquí.</p>
+        <span style="background: rgba(255,255,255,0.2); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px; backdrop-filter: blur(4px);">CUIDADOR</span>
+      </div>
+    </section>
+
+    <section class="dashboard-main container">
+      <div class="dashboard-grid">
+
+        <div class="dashboard-card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </div>
+          <h3>Solicitudes</h3>
+          <p>Revisa las solicitudes de cuidado recibidas.</p>
+          <a href="/solicitudes" class="card-btn">Ver</a>
+        </div>
+
+        <div class="dashboard-card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <h3>Clientes</h3>
+          <p>Gestiona tus clientes activos.</p>
+          <a href="/clientes" class="card-btn">Ver</a>
+        </div>
+
+        <div class="dashboard-card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <h3>Perfil</h3>
+          <p>Edita tu información y configuración.</p>
+          <a href="/perfil-cuidador" class="card-btn">Ver</a>
+        </div>
+
+      </div>
+    </section>
+  </main>
+<!-- FIN MODIFICACION -->
+
+   <%- include('../partials/footer'); %>
+</body>
+</html>

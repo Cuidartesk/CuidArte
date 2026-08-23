@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../../partials/head'); %>
+</head>
+<body>
+
+<!-- ============================================================
+     DASHBOARD DEL ADMINISTRADOR
+     Portado de admin_dashboard.html del proyecto Django:
+     mismas 5 tarjetas (Clientes, Cuidadores, Servicios, Productos,
+     Mensajes) con contadores reales desde MongoDB.
+     ============================================================ -->
+
+   <!-- INICIO MODIFICACION: header unificado igual al base.html de Django -->
+   <%- include('../../partials/header'); %>
+   <!-- FIN MODIFICACION -->
+
+  <section class="welcome-section">
+    <div class="container">
+      <h1>Panel de Administrador</h1>
+      <p>Bienvenido, <%= usuario.name %> &mdash; gestiona cuidadores, usuarios, servicios y productos desde el men&uacute; superior</p>
+    </div>
+  </section>
+
+  <main class="dashboard-main container">
+    <div class="dashboard-grid">
+      <!-- Usuarios -->
+      <div class="dashboard-card" style="position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #27BEF5, #6DD5FA);"></div>
+        <div class="card-icon" style="background: #e0f2fe; color: #0284c7;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 28px; height: 28px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        </div>
+        <span style="font-size: 2.2rem; font-weight: 800; color: #1f2937; line-height: 1;"><%= totalUsuarios %></span>
+        <p style="font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase; color: #6b7280; margin: 6px 0 14px 0; font-weight: 600;">Clientes</p>
+        <p style="font-size: 0.88rem; color: #9ca3af; margin-bottom: 18px; flex-grow: 1;">Administra cuentas de clientes.</p>
+        <a href="#" onclick="alert('Modulo en construccion')" class="card-btn" style="font-size: 0.9rem;">Gestionar Clientes &rarr;</a>
+      </div>
+
+      <!-- Cuidadores -->
+      <div class="dashboard-card" style="position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #10b981, #6ee7b7);"></div>
+        <div class="card-icon" style="background: #dcfce7; color: #059669;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 28px; height: 28px;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+        </div>
+        <span style="font-size: 2.2rem; font-weight: 800; color: #1f2937; line-height: 1;"><%= totalCuidadores %></span>
+        <p style="font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase; color: #6b7280; margin: 6px 0 14px 0; font-weight: 600;">Cuidadores</p>
+        <p style="font-size: 0.88rem; color: #9ca3af; margin-bottom: 18px; flex-grow: 1;">Revisa perfiles, c&eacute;dulas y especialidades.</p>
+        <a href="#" onclick="alert('Modulo en construccion')" class="card-btn" style="font-size: 0.9rem; background: linear-gradient(135deg, #10b981, #6ee7b7);">Ver Cuidadores &rarr;</a>
+      </div>
+
+      <!-- Servicios -->
+      <div class="dashboard-card" style="position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #f59e0b, #fcd34d);"></div>
+        <div class="card-icon" style="background: #fef3c7; color: #d97706;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 28px; height: 28px;"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+        </div>
+        <span style="font-size: 2.2rem; font-weight: 800; color: #1f2937; line-height: 1;"><%= totalServicios %></span>
+        <p style="font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase; color: #6b7280; margin: 6px 0 14px 0; font-weight: 600;">Servicios</p>
+        <p style="font-size: 0.88rem; color: #9ca3af; margin-bottom: 18px; flex-grow: 1;">Crea y edita los servicios de cuidado.</p>
+        <a href="/admin/servicios" class="card-btn" style="font-size: 0.9rem; background: linear-gradient(135deg, #f59e0b, #fcd34d); color: #92400e;">Gestionar Servicios &rarr;</a>
+      </div>
+
+      <!-- Productos -->
+      <div class="dashboard-card" style="position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #8b5cf6, #c4b5fd);"></div>
+        <div class="card-icon" style="background: #ede9fe; color: #7c3aed;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 28px; height: 28px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+        </div>
+        <span style="font-size: 2.2rem; font-weight: 800; color: #1f2937; line-height: 1;"><%= totalProductos %></span>
+        <p style="font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase; color: #6b7280; margin: 6px 0 14px 0; font-weight: 600;">Productos</p>
+        <p style="font-size: 0.88rem; color: #9ca3af; margin-bottom: 18px; flex-grow: 1;">Controla cat&aacute;logo, precios y stock de la tienda.</p>
+        <a href="/admin/productos" class="card-btn" style="font-size: 0.9rem; background: linear-gradient(135deg, #8b5cf6, #c4b5fd);">Gestionar Tienda &rarr;</a>
+      </div>
+
+      <!-- Mensajes -->
+      <div class="dashboard-card" style="position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #ec4899, #f9a8d4);"></div>
+        <div class="card-icon" style="background: #fce7f3; color: #db2777;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 28px; height: 28px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        </div>
+        <span style="font-size: 2.2rem; font-weight: 800; color: #1f2937; line-height: 1;"><%= totalMensajes %></span>
+        <p style="font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase; color: #6b7280; margin: 6px 0 14px 0; font-weight: 600;">Mensajes</p>
+        <p style="font-size: 0.88rem; color: #9ca3af; margin-bottom: 18px; flex-grow: 1;">Mensajes recibidos desde Cont&aacute;ctanos.</p>
+        <a href="#" onclick="alert('Modulo en construccion')" class="card-btn" style="font-size: 0.9rem; background: linear-gradient(135deg, #ec4899, #f9a8d4);">Ver Mensajes &rarr;</a>
+      </div>
+    </div>
+
+    <div style="margin-top: 30px; background: white; border-radius: 16px; padding: 18px 22px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+      <div style="width: 40px; height: 40px; background: #f3f4f6; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #6b7280; flex-shrink: 0;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      </div>
+      <p style="margin: 0; color: #6b7280; font-size: 0.9rem; line-height: 1.5;">Usa el men&uacute; superior <strong style="color: #374151;">Inicio | Ver Sitio | Perfil</strong> para navegar y las tarjetas para gestionar. Los cambios se reflejan al instante en MongoDB.</p>
+    </div>
+  </main>
+
+   <%- include('../../partials/footer'); %>
+</body>
+</html>

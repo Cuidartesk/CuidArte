@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../partials/head'); %>
+</head>
+<body>
+
+   <%- include('../partials/header'); %>
+
+<!-- INICIO MODIFICACION: buscar cuidadores, portado de buscar_cuidadores.html de Django
+     con el buscador "Filtrar por especialidad" FUNCIONAL (coincidencia parcial) -->
+  <section class="welcome-section">
+    <div class="container">
+      <h1>Buscar Cuidadores</h1>
+      <p>Encuentra el profesional ideal seg&uacute;n su especialidad</p>
+    </div>
+  </section>
+
+  <main class="container" style="padding: 36px 20px;">
+    <div style="display: grid; grid-template-columns: 260px 1fr; gap: 24px; align-items: start;">
+      <!-- Barra lateral de busqueda -->
+      <aside style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 18px; position: sticky; top: 20px;">
+        <h3 style="margin: 0 0 12px 0; font-size: 1rem; font-weight: 700; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+          <span style="width: 8px; height: 8px; background: #27BEF5; border-radius: 50%; display: inline-block;"></span>
+          Filtrar por especialidad
+        </h3>
+        <form method="GET" action="/buscar-cuidadores">
+          <input type="text" name="q" value="<%= q %>" placeholder="Ej: Geriatr&iacute;a, Pediatr&iacute;a..." style="width: 100%; padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.92rem; background: #f9fafb; box-sizing: border-box;">
+          <button type="submit" style="width: 100%; margin-top: 10px; background: linear-gradient(135deg, #27BEF5, #6DD5FA); color: white; padding: 10px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">Buscar</button>
+          <% if (q) { %>
+            <a href="/buscar-cuidadores" style="display: block; text-align: center; margin-top: 8px; background: #f3f4f6; color: #374151; padding: 8px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 0.88rem;">Limpiar</a>
+          <% } %>
+        </form>
+        <p style="color: #9ca3af; font-size: 0.82rem; margin: 12px 0 0 0; line-height: 1.4;">Escribe una especialidad y presiona Buscar. Coincidencia parcial.</p>
+        <% if (q) { %>
+          <p style="margin: 10px 0 0 0; font-size: 0.85rem; color: #6b7280;">Resultados para: <strong style="color: #1f2937;">"<%= q %>"</strong></p>
+        <% } %>
+      </aside>
+
+      <!-- Lista de cuidadores -->
+      <section>
+        <% if (cuidadores.length > 0) { %>
+          <p style="color: #6b7280; margin: 0 0 14px 0; font-size: 0.9rem;"><%= cuidadores.length %> cuidador(es) encontrado(s)</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px;">
+            <% cuidadores.forEach(function(c) { %>
+              <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); overflow: hidden; display: flex; flex-direction: column;">
+                <div style="height: 170px; background: #f3f4f6; overflow: hidden;">
+                  <% if (c.foto) { %>
+                    <img src="<%= c.foto %>" alt="<%= c.name %>" style="width: 100%; height: 100%; object-fit: cover;">
+                  <% } else { %>
+                    <img src="/assets/image/user1.png" alt="Cuidador" style="width: 100%; height: 100%; object-fit: cover;">
+                  <% } %>
+                </div>
+                <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
+                  <h3 style="margin: 0; font-size: 1.05rem; color: #1f2937; font-weight: 700;"><%= c.name %> <%= c.apellido || '' %></h3>
+                  <p style="margin: 4px 0 8px 0; color: #0284c7; font-size: 0.88rem; font-weight: 600;"><%= ((c.especialidades || c.especialidad) || 'Cuidador profesional').substring(0, 40) %></p>
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;">
+                    <% if (c.edad) { %><span style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;"><%= c.edad %> a&ntilde;os</span><% } %>
+                    <% if (c.direccion) { %><span style="background: #f3f4f6; color: #6b7280; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem;">&#128205; <%= c.direccion.substring(0, 18) %></span><% } %>
+                  </div>
+                  <a href="/ver-cuidador/<%= c._id %>" style="margin-top: auto; background: #27BEF5; color: white; padding: 9px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 700; font-size: 0.9rem;">Ver m&aacute;s</a>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <div style="background: white; border-radius: 16px; padding: 40px 20px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+            <p style="color: #6b7280; margin: 0 0 6px 0; font-weight: 600;">No se encontraron cuidadores</p>
+            <% if (q) { %>
+              <p style="color: #9ca3af; font-size: 0.9rem; margin: 0 0 14px 0;">Intenta con otra especialidad o limpia el filtro.</p>
+              <a href="/buscar-cuidadores" style="background: #f3f4f6; color: #374151; padding: 10px 16px; border-radius: 10px; text-decoration: none; font-weight: 600;">Ver todos</a>
+            <% } else { %>
+              <p style="color: #9ca3af; font-size: 0.9rem; margin: 0;">A&uacute;n no hay cuidadores registrados.</p>
+            <% } %>
+          </div>
+        <% } %>
+      </section>
+    </div>
+  </main>
+
+  <style>
+    @media (max-width: 780px) {
+      div[style*="grid-template-columns: 260px 1fr"] { grid-template-columns: 1fr !important; }
+      aside { position: static !important; }
+    }
+  </style>
+<!-- FIN MODIFICACION -->
+
+   <%- include('../partials/footer'); %>
+</body>
+</html>

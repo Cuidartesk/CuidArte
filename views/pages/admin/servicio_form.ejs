@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <%- include('../../partials/head'); %>
+</head>
+<body>
+
+<!-- ============================================================
+     FORMULARIO DE SERVICIO (ADMIN) - sirve para CREAR y EDITAR
+     Portado de admin_servicio_form.html del Django.
+     ============================================================ -->
+
+   <!-- INICIO MODIFICACION: header unificado igual al base.html de Django -->
+   <%- include('../../partials/header'); %>
+   <!-- FIN MODIFICACION -->
+
+  <section class="welcome-section" style="padding: 40px 20px;">
+    <div class="container">
+      <h1><%= accion %> Servicio</h1>
+      <p>Completa la informaci&oacute;n del servicio de cuidado</p>
+    </div>
+  </section>
+
+  <main class="container" style="padding: 40px 20px; max-width: 640px;">
+    <a href="/admin/servicios" style="color: #6b7280; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 20px;">&larr; Volver a Servicios</a>
+
+    <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 32px;">
+      <!-- INICIO MODIFICACION: el action cambia segun sea crear o editar -->
+      <% if (accion === 'Editar') { %>
+        <form id="formServicio" method="POST" action="/admin/servicios/<%= servicio._id %>?_method=PUT">
+      <% } else { %>
+        <form id="formServicio" method="POST" action="/admin/servicios">
+      <% } %>
+      <!-- FIN MODIFICACION -->
+
+        <div style="margin-bottom: 18px;">
+          <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Nombre *</label>
+          <input type="text" name="name" required value="<%= accion === 'Editar' ? servicio.name : '' %>"
+                 style="width: 100%; padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; background: #f9fafb;">
+        </div>
+
+        <div style="margin-bottom: 18px;">
+          <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Descripci&oacute;n *</label>
+          <textarea name="description" rows="3" required
+                    style="width: 100%; padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; background: #f9fafb;"><%= accion === 'Editar' ? servicio.description : '' %></textarea>
+        </div>
+
+        <div style="margin-bottom: 18px;">
+          <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Precio (COP) *</label>
+          <input type="number" name="price" min="0" required value="<%= accion === 'Editar' ? servicio.price : '' %>"
+                 style="width: 100%; padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; background: #f9fafb;">
+        </div>
+
+        <!-- INICIO MODIFICACION: imagen Base64 guardada en MongoDB -->
+        <div style="margin-bottom: 18px;">
+          <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Imagen del servicio</label>
+          <input type="file" id="imagenServicio" accept="image/*"
+                 style="font-size: 0.9rem; color: #374151;">
+          <img id="previewServicio" src="<%= accion === 'Editar' && servicio.imageData ? servicio.imageData : '' %>" alt=""
+               style="<%= accion === 'Editar' && servicio.imageData ? 'display:block;' : 'display:none;' %> max-width: 200px; margin-top: 10px; border-radius: 10px;">
+          <input type="hidden" name="imageData" id="imageDataServicio"
+                 value="<%= accion === 'Editar' ? servicio.imageData : '' %>">
+        </div>
+        <!-- FIN MODIFICACION -->
+
+        <!-- INICIO MODIFICACION: estado Activo/Inactivo del taller, igual al Django -->
+        <div style="margin-bottom: 18px;">
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" name="activo" <%= accion === 'Editar' ? (servicio.activo !== false ? 'checked' : '') : 'checked' %>
+                   style="width: 18px; height: 18px; accent-color: #27BEF5; cursor: pointer;">
+            <span style="font-weight: 600; color: #374151; font-size: 0.9rem;">Taller activo (visible en la p&aacute;gina de servicios)</span>
+          </label>
+        </div>
+        <!-- FIN MODIFICACION -->
+
+        <button type="submit" style="width: 100%; background: linear-gradient(135deg, #27BEF5, #6DD5FA); color: white; padding: 12px; border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 12px rgba(39,190,245,0.3);">Guardar Servicio</button>
+      </form>
+    </div>
+  </main>
+
+   <%- include('../../partials/footer'); %>
+
+   <script src="/js/imagenes_base64.js"></script>
+   <script>
+     // Conecta los ids propios del formulario de servicio con la logica compartida
+     conectarFormularioImagen({
+       form: 'formServicio',
+       inputArchivo: 'imagenServicio',
+       preview: 'previewServicio',
+       campoOculto: 'imageDataServicio'
+     });
+   </script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const router = Router();
+const supabase = require('../config/supabase');
 
 const clientController = require('../controllers/client.controller');
 const caregiverController = require('../controllers/caregiver.controller');
@@ -29,8 +30,8 @@ router.delete('/services/:id', serviceController.eliminar);
 router.post('/products', productController.registrar);
 router.get('/products', async (req, res) => {
   try {
-    const Product = require('../models/product.model');
-    const products = await Product.find({});
+    const { data: products, error } = await supabase.from('products').select('*');
+    if (error) throw error;
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener los productos', error: error.message });

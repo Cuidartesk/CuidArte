@@ -51,8 +51,8 @@
           <% productos.forEach(function(producto) { %>
             <div class="producto-card">
               <div class="producto-imagen">
-                <% if (producto.imageData) { %>
-                  <img src="<%= producto.imageData %>" alt="<%= producto.name %>">
+                <% if (producto.image_url) { %>
+                  <img src="<%= producto.image_url %>" alt="<%= producto.name %>">
                 <% } else { %>
                   <div class="producto-imagen-placeholder">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

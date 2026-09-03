@@ -2,7 +2,7 @@
    ARCHIVO NUEVO COMPLETO
    crear-admin.js
    Es nuestro equivalente al "python manage.py createsuperuser"
-   de Django. Crea un usuario con role 'admin' en MongoDB.
+   de Django. Crea un usuario con role 'admin' en Supabase.
 
    Dos formas de usarlo:
 
@@ -14,17 +14,9 @@
    ============================================================ */
 
 require('dotenv').config();
-require('./config/connectiondb');
-const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const readline = require('readline');
-
-// INICIO MODIFICACION: los admins viven en 'administrators'; clientes y
-// cuidadores tienen sus propias colecciones, ya no existe 'users'
-const Administrator = require('./models/admin.model');
-const Client = require('./models/client.model');
-const Caregiver = require('./models/caregiver.model');
-// FIN MODIFICACION
+const supabase = require('./config/supabase');
 
 // Pregunta por consola
 function preguntar(rl, texto) {
@@ -44,35 +36,25 @@ async function crearAdmin(nombre, correo, clave) {
         process.exit(1);
     }
 
-    let intentos = 0;
-    while (mongoose.connection.readyState !== 1 && intentos < 30) {
-        await new Promise(r => setTimeout(r, 1000));
-        intentos++;
-    }
-    if (mongoose.connection.readyState !== 1) {
-        console.error('[ERROR] No se pudo conectar a MongoDB.');
-        process.exit(1);
-    }
-
     // 2. Si el correo ya existe como admin, lo actualiza
-    // INICIO MODIFICACION: ya no se mueve nada desde users (esa coleccion no existe)
-    const existente = await Administrator.findOne({ email: correo.toLowerCase() });
+    const { data: existente } = await supabase.from('administrators')
+        .select('*').eq('email', correo.toLowerCase()).maybeSingle();
     if (!existente) {
-        const enClient = await Client.findOne({ email: correo.toLowerCase() });
-        const enCaregiver = await Caregiver.findOne({ email: correo.toLowerCase() });
+        const { data: enClient } = await supabase.from('clients').select('id').eq('email', correo.toLowerCase()).maybeSingle();
+        const { data: enCaregiver } = await supabase.from('caregivers').select('id').eq('email', correo.toLowerCase()).maybeSingle();
         if (enClient || enCaregiver) {
             console.error('[ERROR] Ese correo ya esta registrado como cliente o cuidador.');
             process.exit(1);
         }
     }
     if (existente) {
-        existente.name = nombre;
-        existente.password = await bcrypt.hash(clave, 10); // 10 = rondas de hash
-        await existente.save();
+        const hash = await bcrypt.hash(clave, 10);
+        await supabase.from('administrators').update({ name: nombre, password: hash })
+            .eq('id', existente.id);
         console.log(`[OK] El administrador "${correo}" ya existia y fue ACTUALIZADO.`);
     } else {
         const hash = await bcrypt.hash(clave, 10);
-        await Administrator.create({
+        await supabase.from('administrators').insert({
             name: nombre,
             email: correo.toLowerCase(),
             password: hash,

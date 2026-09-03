@@ -1,15 +1,14 @@
 /* ============================================================
    ARCHIVO NUEVO COMPLETO
    controllers/tienda.controller.js
-   Portado de las vistas de Django:
+   Portado de las vistas de Django con Supabase:
    - tienda: lista productos con filtro por categoria
    - agregarCarrito / verCarrito / quitarCarrito: carrito en sesion
    - comprarCarrito: checkout con validaciones, descuenta stock
-     y crea pedidos (PedidoProducto)
+     y crea pedidos
    ============================================================ */
 
-const Product = require('../models/product.model');
-const Pedido = require('../models/pedido.model');
+const supabase = require('../config/supabase');
 
 // Etiquetas de categoria, iguales a Producto.CATEGORIAS de Django
 const CATEGORIAS = [
@@ -29,17 +28,17 @@ function etiquetaCategoria(valor) {
 exports.tienda = async (req, res) => {
     try {
         const categoria = String(req.query.categoria || '');
-        const filtro = { activo: true };
+        let query = supabase.from('products').select('*').eq('activo', true);
         // INICIO MODIFICACION: compatibilidad con categorias antiguas de la demo
         if (categoria === 'cuidado') {
-            filtro.category = { $in: ['cuidado', 'cuidado personal'] };
+            query = query.in('category', ['cuidado', 'cuidado personal']);
         } else if (categoria) {
-            filtro.category = categoria;
+            query = query.eq('category', categoria);
         }
         // FIN MODIFICACION
-        const productos = await Product.find(filtro).lean();
+        const { data: productos } = await query;
         res.render('pages/tienda', {
-            productos,
+            productos: productos || [],
             categorias: CATEGORIAS,
             categoriaActual: categoria,
             etiquetaCategoria
@@ -52,10 +51,11 @@ exports.tienda = async (req, res) => {
 // POST /agregar-carrito/:id  (igual a agregar_carrito de Django)
 exports.agregarCarrito = async (req, res) => {
     try {
-        const producto = await Product.findOne({ _id: req.params.id, activo: true }).lean();
+        const { data: producto } = await supabase.from('products')
+            .select('*').eq('id', req.params.id).eq('activo', true).maybeSingle();
         if (!producto) return res.redirect('/tienda');
         const carrito = req.session.carrito || {};
-        const pid = String(producto._id);
+        const pid = String(producto.id);
         const cantActual = carrito[pid] || 0;
         if ((producto.stock || 0) <= 0) {
             req.session.flashMensaje = { texto: `${producto.name} está agotado.`, tipo: 'error' };
@@ -80,12 +80,18 @@ exports.verCarrito = async (req, res) => {
         const carrito = req.session.carrito || {};
         const items = [];
         let total = 0;
-        for (const [pid, cant] of Object.entries(carrito)) {
-            const p = await Product.findOne({ _id: pid, activo: true }).lean();
-            if (!p) { delete carrito[pid]; continue; }
-            const subtotal = p.price * cant;
-            total += subtotal;
-            items.push({ producto: p, cantidad: cant, subtotal });
+        const pids = Object.keys(carrito);
+        if (pids.length > 0) {
+            const { data: productos } = await supabase.from('products').select('*').in('id', pids);
+            const porId = {};
+            (productos || []).forEach(p => { porId[p.id] = p; });
+            for (const [pid, cant] of Object.entries(carrito)) {
+                const p = porId[pid];
+                if (!p || !p.activo) { delete carrito[pid]; continue; }
+                const subtotal = Number(p.price) * cant;
+                total += subtotal;
+                items.push({ producto: p, cantidad: cant, subtotal });
+            }
         }
         req.session.carrito = carrito;
         res.render('pages/carrito', { items, total });
@@ -113,14 +119,18 @@ exports.comprarCarrito = async (req, res) => {
         }
         const items = [];
         let total = 0;
+        const pids = Object.keys(carrito);
+        const { data: productos } = await supabase.from('products').select('*').in('id', pids);
+        const porId = {};
+        (productos || []).forEach(p => { porId[p.id] = p; });
         for (const [pid, cant] of Object.entries(carrito)) {
-            const p = await Product.findOne({ _id: pid, activo: true }).lean();
+            const p = porId[pid];
             if (!p) continue;
             if (cant > p.stock) {
                 req.session.flashMensaje = { texto: `No hay suficiente stock para ${p.name}. Solo quedan ${p.stock} unidades.`, tipo: 'error' };
                 return res.redirect('/carrito');
             }
-            const subtotal = p.price * cant;
+            const subtotal = Number(p.price) * cant;
             total += subtotal;
             items.push({ producto: p, cantidad: cant, subtotal });
         }
@@ -150,15 +160,12 @@ exports.comprarCarrito = async (req, res) => {
                 }
             }
             for (const it of items) {
-                await Product.updateOne(
-                    { _id: it.producto._id },
-                    { $inc: { stock: -it.cantidad } }
-                );
-                await Pedido.create({
+                await supabase.from('products').update({ stock: it.producto.stock - it.cantidad }).eq('id', it.producto.id);
+                await supabase.from('pedidos').insert({
                     usuario: req.session.usuario.id,
-                    producto: it.producto._id,
+                    producto: it.producto.id,
                     cantidad: it.cantidad,
-                    direccionEnvio: direccion,
+                    direccion_envio: direccion,
                     telefono: telefono,
                     estado: 'pendiente'
                 });

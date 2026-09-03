@@ -6,27 +6,24 @@
    el router solo declara rutas y aqui va todo el trabajo.
    ============================================================ */
 
-const Product = require('../models/product.model');
-const Service = require('../models/service.model');
-// INICIO MODIFICACION: cada rol vive en su propia coleccion
-const Administrator = require('../models/admin.model');
-const Client = require('../models/client.model');
-const Caregiver = require('../models/caregiver.model');
-// FIN MODIFICACION
+const supabase = require('../config/supabase');
+const { subirImagen } = require('../config/supabase');
 
 /* ===================== DASHBOARD ===================== */
 
-// Muestra el panel principal con los contadores desde MongoDB
+// Muestra el panel principal con los contadores desde Supabase
 exports.dashboard = async (req, res) => {
     try {
-        // INICIO MODIFICACION: usuarios = clientes + cuidadores (colecciones separadas)
-        const [totalClientes, totalCuidadores, totalServicios, totalProductos] =
-            await Promise.all([
-                Client.countDocuments(),
-                Caregiver.countDocuments(),
-                Service.countDocuments(),
-                Product.countDocuments()
-            ]);
+        const [rCli, rCare, rServ, rProd] = await Promise.all([
+            supabase.from('clients').select('id', { count: 'exact', head: true }),
+            supabase.from('caregivers').select('id', { count: 'exact', head: true }),
+            supabase.from('services').select('id', { count: 'exact', head: true }),
+            supabase.from('products').select('id', { count: 'exact', head: true })
+        ]);
+        const totalClientes = rCli.count || 0;
+        const totalCuidadores = rCare.count || 0;
+        const totalServicios = rServ.count || 0;
+        const totalProductos = rProd.count || 0;
         res.render('pages/admin/dashboard', {
             totalUsuarios: totalClientes + totalCuidadores,
             totalCuidadores,
@@ -42,10 +39,10 @@ exports.dashboard = async (req, res) => {
 /* ===================== PERFIL ===================== */
 
 // Muestra la pagina de perfil del administrador
-// INICIO MODIFICACION: se busca en Administrator, no en User
 exports.perfil = async (req, res) => {
     try {
-        const usuario = await Administrator.findOne({ _id: req.session.usuario.id }).lean();
+        const { data: usuario } = await supabase.from('administrators')
+            .select('*').eq('id', req.session.usuario.id).single();
         res.render('pages/admin/perfil', { usuario });
     } catch (error) {
         res.redirect('/admin');
@@ -55,7 +52,8 @@ exports.perfil = async (req, res) => {
 // Formulario para editar el perfil del administrador
 exports.formEditarPerfil = async (req, res) => {
     try {
-        const usuario = await Administrator.findOne({ _id: req.session.usuario.id }).lean();
+        const { data: usuario } = await supabase.from('administrators')
+            .select('*').eq('id', req.session.usuario.id).single();
         res.render('pages/admin/perfil_form', { usuario });
     } catch (error) {
         res.redirect('/admin/perfil');
@@ -65,16 +63,16 @@ exports.formEditarPerfil = async (req, res) => {
 // Guarda los cambios del perfil (usuario, nombre, apellido, correo, fecha de nacimiento)
 exports.actualizarPerfil = async (req, res) => {
     try {
+        const miId = req.session.usuario.id;
+
         // si cambia el correo, verificar que otra cuenta no lo tenga ya
-        // INICIO MODIFICACION: se revisa en las tres colecciones
-        const correoRepetido = await Administrator.findOne({
-            email: req.body.correo.toLowerCase(),
-            _id: { $ne: req.session.usuario.id }
-        })
-            || await Client.findOne({ email: req.body.correo.toLowerCase() })
-            || await Caregiver.findOne({ email: req.body.correo.toLowerCase() });
+        const correoNuevo = req.body.correo.toLowerCase();
+        const correoRepetido =
+            (await supabase.from('administrators').select('id').neq('id', miId).eq('email', correoNuevo).maybeSingle()).data
+            || (await supabase.from('clients').select('id').eq('email', correoNuevo).maybeSingle()).data
+            || (await supabase.from('caregivers').select('id').eq('email', correoNuevo).maybeSingle()).data;
         if (correoRepetido) {
-            const actual = await Administrator.findOne({ _id: req.session.usuario.id }).lean();
+            const { data: actual } = await supabase.from('administrators').select('*').eq('id', miId).single();
             return res.status(400).render('pages/admin/perfil_form', {
                 usuario: actual,
                 error: 'Ese correo ya esta en uso por otra cuenta.'
@@ -84,12 +82,10 @@ exports.actualizarPerfil = async (req, res) => {
         // igual que en Django: el nombre de usuario no puede repetirse
         let nuevoUsuario = (req.body.usuario || '').trim();
         if (nuevoUsuario) {
-            const usuarioRepetido = await Administrator.findOne({
-                usuario: nuevoUsuario,
-                _id: { $ne: req.session.usuario.id }
-            });
+            const { data: usuarioRepetido } = await supabase.from('administrators')
+                .select('id').neq('id', miId).eq('usuario', nuevoUsuario).maybeSingle();
             if (usuarioRepetido) {
-                const actual = await Administrator.findOne({ _id: req.session.usuario.id }).lean();
+                const { data: actual } = await supabase.from('administrators').select('*').eq('id', miId).single();
                 return res.status(400).render('pages/admin/perfil_form', {
                     usuario: actual,
                     error: 'Ese nombre de usuario ya esta en uso.'
@@ -97,17 +93,13 @@ exports.actualizarPerfil = async (req, res) => {
             }
         }
 
-        await Administrator.findOneAndUpdate(
-            { _id: req.session.usuario.id },
-            {
-                usuario: nuevoUsuario || undefined,
-                name: req.body.nombre,
-                apellido: req.body.apellido || '',
-                email: req.body.correo.toLowerCase(),
-                fechaNacimiento: req.body.fechaNacimiento ? new Date(req.body.fechaNacimiento) : null
-            },
-            { new: true }
-        );
+        await supabase.from('administrators').update({
+            usuario: nuevoUsuario || null,
+            name: req.body.nombre,
+            apellido: req.body.apellido || '',
+            email: correoNuevo,
+            fecha_nacimiento: req.body.fechaNacimiento ? new Date(req.body.fechaNacimiento).toISOString() : null
+        }).eq('id', miId);
         res.redirect('/admin/perfil');
     } catch (error) {
         res.status(400).send('Error al actualizar el perfil: ' + error.message);
@@ -119,7 +111,7 @@ exports.actualizarPerfil = async (req, res) => {
 // Lista todos los productos en la tabla del admin
 exports.listaProductos = async (req, res) => {
     try {
-        const productos = await Product.find({}).lean();
+        const { data: productos } = await supabase.from('products').select('*').order('created_at', { ascending: false });
         res.render('pages/admin/productos', { productos });
     } catch (error) {
         res.status(500).send('Error al cargar los productos');
@@ -134,7 +126,8 @@ exports.formCrearProducto = (req, res) => {
 // Formulario lleno para editar un producto
 exports.formEditarProducto = async (req, res) => {
     try {
-        const producto = await Product.findOne({ _id: req.params.id }).lean();
+        const { data: producto } = await supabase.from('products')
+            .select('*').eq('id', req.params.id).maybeSingle();
         if (!producto) {
             return res.redirect('/admin/productos');
         }
@@ -147,14 +140,14 @@ exports.formEditarProducto = async (req, res) => {
 // Guarda el producto que llega del formulario
 exports.guardarProducto = async (req, res) => {
     try {
-        await Product.create({
+        const image_url = await subirImagen(req.body.imageData || '', 'cuidarte', req.body.name || 'producto');
+        await supabase.from('products').insert({
             name: req.body.name,
             description: req.body.description,
             price: Number(req.body.price),
             stock: Number(req.body.stock),
             category: req.body.category,
-            imageData: req.body.imageData || '',
-            imageType: req.body.imageData ? 'jpeg' : '',
+            image_url,
             activo: req.body.activo === 'on'
         });
         res.redirect('/admin/productos');
@@ -166,20 +159,20 @@ exports.guardarProducto = async (req, res) => {
 // Actualiza un producto existente
 exports.actualizarProducto = async (req, res) => {
     try {
-        await Product.findOneAndUpdate(
-            { _id: req.params.id },
-            {
-                name: req.body.name,
-                description: req.body.description,
-                price: Number(req.body.price),
-                stock: Number(req.body.stock),
-                category: req.body.category,
-                // si vino una imagen nueva la reemplaza; si no, conserva la anterior
-                ...(req.body.imageData ? { imageData: req.body.imageData, imageType: 'jpeg' } : {}),
-                activo: req.body.activo === 'on'
-            },
-            { new: true }
-        );
+        const cambios = {
+            name: req.body.name,
+            description: req.body.description,
+            price: Number(req.body.price),
+            stock: Number(req.body.stock),
+            category: req.body.category,
+            activo: req.body.activo === 'on'
+        };
+        // si vino una imagen nueva la reemplaza; si no, conserva la anterior
+        if (req.body.imageData && String(req.body.imageData).startsWith('data:image')) {
+            const image_url = await subirImagen(req.body.imageData, 'cuidarte', req.body.name || 'producto');
+            if (image_url) cambios.image_url = image_url;
+        }
+        await supabase.from('products').update(cambios).eq('id', req.params.id);
         res.redirect('/admin/productos');
     } catch (error) {
         res.status(400).send('Error al actualizar el producto: ' + error.message);
@@ -189,7 +182,7 @@ exports.actualizarProducto = async (req, res) => {
 // Elimina un producto
 exports.eliminarProducto = async (req, res) => {
     try {
-        await Product.findByIdAndDelete(req.params.id);
+        await supabase.from('products').delete().eq('id', req.params.id);
         res.redirect('/admin/productos');
     } catch (error) {
         res.status(500).send('Error al eliminar el producto');
@@ -201,7 +194,7 @@ exports.eliminarProducto = async (req, res) => {
 // Lista todos los servicios en la tabla del admin
 exports.listaServicios = async (req, res) => {
     try {
-        const servicios = await Service.find({}).lean();
+        const { data: servicios } = await supabase.from('services').select('*').order('created_at', { ascending: false });
         res.render('pages/admin/servicios', { servicios });
     } catch (error) {
         res.status(500).send('Error al cargar los servicios');
@@ -216,7 +209,8 @@ exports.formCrearServicio = (req, res) => {
 // Formulario lleno para editar un servicio
 exports.formEditarServicio = async (req, res) => {
     try {
-        const servicio = await Service.findOne({ _id: req.params.id }).lean();
+        const { data: servicio } = await supabase.from('services')
+            .select('*').eq('id', req.params.id).maybeSingle();
         if (!servicio) {
             return res.redirect('/admin/servicios');
         }
@@ -229,12 +223,12 @@ exports.formEditarServicio = async (req, res) => {
 // Guarda el servicio que llega del formulario
 exports.guardarServicio = async (req, res) => {
     try {
-        await Service.create({
+        const image_url = await subirImagen(req.body.imageData || '', 'cuidarte', req.body.name || 'servicio');
+        await supabase.from('services').insert({
             name: req.body.name,
             description: req.body.description,
             price: Number(req.body.price),
-            imageData: req.body.imageData || '',
-            imageType: req.body.imageData ? 'jpeg' : '',
+            image_url,
             activo: req.body.activo === 'on'
         });
         res.redirect('/admin/servicios');
@@ -246,17 +240,17 @@ exports.guardarServicio = async (req, res) => {
 // Actualiza un servicio existente
 exports.actualizarServicio = async (req, res) => {
     try {
-        await Service.findOneAndUpdate(
-            { _id: req.params.id },
-            {
-                name: req.body.name,
-                description: req.body.description,
-                price: Number(req.body.price),
-                ...(req.body.imageData ? { imageData: req.body.imageData, imageType: 'jpeg' } : {}),
-                activo: req.body.activo === 'on'
-            },
-            { new: true }
-        );
+        const cambios = {
+            name: req.body.name,
+            description: req.body.description,
+            price: Number(req.body.price),
+            activo: req.body.activo === 'on'
+        };
+        if (req.body.imageData && String(req.body.imageData).startsWith('data:image')) {
+            const image_url = await subirImagen(req.body.imageData, 'cuidarte', req.body.name || 'servicio');
+            if (image_url) cambios.image_url = image_url;
+        }
+        await supabase.from('services').update(cambios).eq('id', req.params.id);
         res.redirect('/admin/servicios');
     } catch (error) {
         res.status(400).send('Error al actualizar el servicio: ' + error.message);
@@ -266,7 +260,7 @@ exports.actualizarServicio = async (req, res) => {
 // Elimina un servicio
 exports.eliminarServicio = async (req, res) => {
     try {
-        await Service.findByIdAndDelete(req.params.id);
+        await supabase.from('services').delete().eq('id', req.params.id);
         res.redirect('/admin/servicios');
     } catch (error) {
         res.status(500).send('Error al eliminar el servicio');

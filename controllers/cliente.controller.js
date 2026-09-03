@@ -1,16 +1,14 @@
 /* ============================================================
    ARCHIVO NUEVO COMPLETO
    controllers/cliente.controller.js
-   Controlador del cliente portado de Django:
+   Controlador del cliente portado de Django con Supabase:
    - dashboard: las 5 tarjetas de dashboard_cliente.html
    - buscarCuidadores: filtro por especialidad (coincidencia parcial)
    - verCuidador / contactarCuidador: ficha y contacto (crea solicitud)
    - misReservas: solicitudes enviadas por el cliente
    ============================================================ */
 
-const Client = require('../models/client.model');
-const Caregiver = require('../models/caregiver.model');
-const Solicitud = require('../models/solicitud.model');
+const supabase = require('../config/supabase');
 
 // calcula la edad desde la fecha de nacimiento
 function calcularEdad(fecha) {
@@ -26,7 +24,8 @@ function calcularEdad(fecha) {
 // Dashboard del cliente (igual a dashboard_cliente.html de Django)
 exports.dashboard = async (req, res) => {
     try {
-        const usuario = await Client.findOne({ _id: req.session.usuario.id }).lean();
+        const { data: usuario } = await supabase.from('clients')
+            .select('*').eq('id', req.session.usuario.id).single();
         res.render('pages/dashboard_cliente', { usuario });
     } catch (error) {
         res.redirect('/');
@@ -34,36 +33,32 @@ exports.dashboard = async (req, res) => {
 };
 
 // Buscar cuidadores con filtro de especialidad (igual a buscar_cuidadores de Django)
-// INICIO MODIFICACION: buscador funcional con coincidencia parcial
 exports.buscarCuidadores = async (req, res) => {
     try {
         const q = String(req.query.q || '').trim();
-        let filtro = {};
+        let query = supabase.from('caregivers').select('*');
         if (q) {
-            // icontains de Django: coincidencia parcial sin importar mayusculas
-            const rx = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-            filtro = { $or: [{ especialidades: rx }, { especialidad: rx }] };
+            const rx = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            query = query.or(`especialidades.ilike.%${rx}%,especialidad.ilike.%${rx}%`);
         }
-        const cuidadores = await Caregiver.find(filtro).lean();
-        cuidadores.forEach(c => { c.edad = calcularEdad(c.fechaNacimiento); });
-        res.render('pages/buscar_cuidadores', { cuidadores, q });
+        const { data: cuidadores } = await query;
+        (cuidadores || []).forEach(c => { c.edad = calcularEdad(c.fecha_nacimiento); });
+        res.render('pages/buscar_cuidadores', { cuidadores: cuidadores || [], q });
     } catch (error) {
         res.render('pages/buscar_cuidadores', { cuidadores: [], q: '' });
     }
 };
-// FIN MODIFICACION
 
 // Ficha completa del cuidador (igual a ver_cuidador de Django)
 exports.verCuidador = async (req, res) => {
     try {
-        const cuidador = await Caregiver.findOne({ _id: req.params.id }).lean();
+        const { data: cuidador } = await supabase.from('caregivers')
+            .select('*').eq('id', req.params.id).maybeSingle();
         if (!cuidador) return res.redirect('/buscar-cuidadores');
-        cuidador.edad = calcularEdad(cuidador.fechaNacimiento);
-        const yaContactado = await Solicitud.exists({
-            cliente: req.session.usuario.id,
-            cuidador: cuidador._id
-        });
-        res.render('pages/ver_cuidador', { c: cuidador, yaContactado: !!yaContactado });
+        cuidador.edad = calcularEdad(cuidador.fecha_nacimiento);
+        const { data: exists } = await supabase.from('solicitudes')
+            .select('id').eq('cliente', req.session.usuario.id).eq('cuidador', cuidador.id).maybeSingle();
+        res.render('pages/ver_cuidador', { c: cuidador, yaContactado: !!exists });
     } catch (error) {
         res.redirect('/buscar-cuidadores');
     }
@@ -72,17 +67,16 @@ exports.verCuidador = async (req, res) => {
 // Contactar cuidador: crea la solicitud (igual a contactar_cuidador de Django)
 exports.contactarCuidador = async (req, res) => {
     try {
-        const cuidador = await Caregiver.findOne({ _id: req.params.id }).lean();
+        const { data: cuidador } = await supabase.from('caregivers')
+            .select('*').eq('id', req.params.id).maybeSingle();
         if (!cuidador) return res.redirect('/buscar-cuidadores');
-        const yaExiste = await Solicitud.exists({
-            cliente: req.session.usuario.id,
-            cuidador: cuidador._id,
-            estado: 'pendiente'
-        });
+        const { data: yaExiste } = await supabase.from('solicitudes')
+            .select('id').eq('cliente', req.session.usuario.id)
+            .eq('cuidador', cuidador.id).eq('estado', 'pendiente').maybeSingle();
         if (!yaExiste) {
-            await Solicitud.create({
+            await supabase.from('solicitudes').insert({
                 cliente: req.session.usuario.id,
-                cuidador: cuidador._id,
+                cuidador: cuidador.id,
                 servicio: cuidador.especialidades || cuidador.especialidad || '',
                 mensaje: `Hola ${cuidador.name}, me interesa tu servicio de ${cuidador.especialidades || 'cuidado'}.`
             });
@@ -97,31 +91,27 @@ exports.contactarCuidador = async (req, res) => {
 // Mis reservas: solicitudes que el cliente ha enviado
 exports.misReservas = async (req, res) => {
     try {
-        const solicitudes = await Solicitud.find({ cliente: req.session.usuario.id })
-            .populate('cuidador')
-            .sort({ createdAt: -1 })
-            .lean();
-        res.render('pages/mis_reservas', { solicitudes });
+        const { data: solicitudes } = await supabase.from('solicitudes')
+            .select('*, cuidador:caregivers(*)').eq('cliente', req.session.usuario.id)
+            .order('created_at', { ascending: false });
+        res.render('pages/mis_reservas', { solicitudes: solicitudes || [] });
     } catch (error) {
         res.render('pages/mis_reservas', { solicitudes: [] });
     }
 };
 
 // Mi perfil del cliente (igual a mi_perfil de Django)
-// INICIO MODIFICACION
 exports.miPerfil = async (req, res) => {
     try {
-        const usuario = await Client.findOne({ _id: req.session.usuario.id }).lean();
+        const { data: usuario } = await supabase.from('clients')
+            .select('*').eq('id', req.session.usuario.id).single();
         res.render('pages/mi_perfil', { usuario });
     } catch (error) {
         res.redirect('/dashboard-cliente');
     }
 };
-// FIN MODIFICACION
 
 // Mis agendas: modulo de agenda aun no portado
-// INICIO MODIFICACION
 exports.misAgendas = (req, res) => {
     res.render('pages/mis_agendas');
 };
-// FIN MODIFICACION

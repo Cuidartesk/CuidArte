@@ -38,8 +38,8 @@
                 <tr style="border-bottom: 1px solid #f3f4f6;">
                   <td style="padding: 14px 16px;">
                     <div style="display: flex; gap: 12px; align-items: center;">
-                      <% if (item.producto.imageData) { %>
-                        <img src="<%= item.producto.imageData %>" alt="<%= item.producto.name %>" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover;">
+                      <% if (item.producto.image_url) { %>
+                        <img src="<%= item.producto.image_url %>" alt="<%= item.producto.name %>" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover;">
                       <% } %>
                       <div>
                         <p style="margin: 0; font-weight: 600; color: #1f2937;"><%= item.producto.name %></p>

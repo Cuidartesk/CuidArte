@@ -1,13 +1,11 @@
 require('dotenv').config();
-require('./config/connectiondb');
 const express = require('express');
 const methodOverride = require('method-override');
 const path = require('path');
 const app = express();
 const routes = require('./router/enrutamiento.router');
 const caregiverController = require('./controllers/caregiver.controller');
-const Service = require('./models/service.model');
-const Product = require('./models/product.model');
+const supabase = require('./config/supabase');
 const productController = require('./controllers/product.controller');
 const PORT = process.env.PORT || 8000;
 
@@ -15,11 +13,6 @@ const PORT = process.env.PORT || 8000;
 // Librerias para manejar sesiones (quien esta logueado) y contrasenas cifradas
 const session = require('express-session');
 const bcrypt = require('bcrypt');
-// INICIO MODIFICACION: cada rol vive en su propia coleccion
-const Administrator = require('./models/admin.model');
-const Client = require('./models/client.model');
-const Caregiver = require('./models/caregiver.model');
-// FIN MODIFICACION
 /* ====================== FIN MODIFICACION 1: SESIONES Y LOGIN ======================= */
 
 // Parseo de peticiones: JSON (API) y urlencoded (formularios HTML)
@@ -73,19 +66,18 @@ app.use((req, res, next) => {
 
 
 // Pone el usuario logueado (si existe) disponible en TODAS las vistas EJS.
-// INICIO MODIFICACION: se consulta fresco desde MongoDB en cada peticion,
+// INICIO MODIFICACION: se consulta fresco desde Supabase en cada peticion,
 // igual que request.user en Django. La sesion guarda 'origen' para saber
-// en que coleccion buscar: administrators | caregivers | clients
+// en que tabla buscar: administrators | caregivers | clients
 app.use(async (req, res, next) => {
     if (req.session.usuario && req.session.usuario.id) {
         let u = null;
-        if (req.session.usuario.origen === 'administrator') {
-            u = await Administrator.findOne({ _id: req.session.usuario.id }).lean();
-        } else if (req.session.usuario.origen === 'caregiver') {
-            u = await Caregiver.findOne({ _id: req.session.usuario.id }).lean();
-        } else if (req.session.usuario.origen === 'client') {
-            u = await Client.findOne({ _id: req.session.usuario.id }).lean();
-        }
+        const origen = req.session.usuario.origen;
+        const tabla = origen === 'administrator' ? 'administrators'
+            : origen === 'caregiver' ? 'caregivers'
+            : 'clients';
+        const { data } = await supabase.from(tabla).select('*').eq('id', req.session.usuario.id).maybeSingle();
+        u = data || null;
         res.locals.usuario = u || null;
     } else {
         res.locals.usuario = null;
@@ -122,17 +114,13 @@ app.post('/login', async (req, res) => {
     const email = String(req.body.email || '').trim();
     const password = String(req.body.password || '');
 
-    // 1. Busca en las tres colecciones: administradores, cuidadores y clientes
-    // INICIO MODIFICACION: cada rol vive en su propia coleccion
-    let user = await Administrator.findOne({ email: String(email).toLowerCase() });
-    let origen = 'administrator';
-    if (!user) {
-      user = await Caregiver.findOne({ email: String(email).toLowerCase() });
-      origen = 'caregiver';
-    }
-    if (!user) {
-      user = await Client.findOne({ email: String(email).toLowerCase() });
-      origen = 'client';
+    // 1. Busca en las tres tablas: administradores, cuidadores y clientes
+    const emailBuscado = String(email).toLowerCase();
+    let user = null;
+    let origen = null;
+    for (const [tabla, o] of [['administrators', 'administrator'], ['caregivers', 'caregiver'], ['clients', 'client']]) {
+      const { data } = await supabase.from(tabla).select('*').eq('email', emailBuscado).maybeSingle();
+      if (data) { user = data; origen = o; break; }
     }
     if (!user) {
       return res.status(401).send('Correo o contrasena incorrectos');
@@ -146,7 +134,7 @@ app.post('/login', async (req, res) => {
 
     // 3. Guarda al usuario en la sesion (a partir de aqui esta "logueado")
     req.session.usuario = {
-      id: user._id,
+      id: user.id,
       name: user.name,
       role: user.role,
       origen
@@ -209,7 +197,7 @@ app.use(rutasCliente);
 app.get('/registrarproducto', productController.formulario);
 app.get('/servicios', async (req, res) => {
   try {
-    const servicios = await Service.find().lean();
+    const { data: servicios } = await supabase.from('services').select('*').order('created_at', { ascending: true });
     res.render('pages/servicios', { servicios });
   } catch (error) {
     res.status(500).send('Error al cargar los servicios');

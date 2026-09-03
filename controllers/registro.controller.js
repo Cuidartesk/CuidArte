@@ -1,10 +1,8 @@
 // INICIO MODIFICACION: controlador de registro (clientes y cuidadores)
 // Replica las validaciones de RegistroClienteForm y RegistroCuidadorForm de Django,
 // mas un captcha SVG propio guardado en la sesion.
-// Cada rol se guarda en SU coleccion: clientes -> clients, cuidadores -> caregivers
-const Client = require('../models/client.model');
-const Caregiver = require('../models/caregiver.model');
-const Administrator = require('../models/admin.model');
+// Cada rol se guarda en SU tabla: clientes -> clients, cuidadores -> caregivers
+const supabase = require('../config/supabase');
 const bcrypt = require('bcrypt');
 
 const ESPECIALIDADES = [
@@ -131,14 +129,15 @@ async function procesarRegistro(req, res, tipo) {
         if (apellido.length < 3) errores.apellido = 'El apellido debe tener mínimo 3 letras.';
         else if (/\d/.test(apellido)) errores.apellido = 'El apellido no puede contener números.';
 
-        // 3. Correo: formato estricto + unico (se revisa en las tres colecciones)
+        // 3. Correo: formato estricto + unico (se revisa en las tres tablas)
         const correo = String(v.correo || '').trim().toLowerCase();
         if (!/^[A-Za-z0-9._%+-]{3,}@[A-Za-z]{3,}\.[A-Za-z]{2,}$/.test(correo)) {
             errores.correo = 'El correo debe tener mínimo 3 letras antes del @, mínimo 3 después del @, un punto y al menos 2 letras después del punto';
         } else {
-            const repetido = await Administrator.findOne({ email: correo })
-                || await Client.findOne({ email: correo })
-                || await Caregiver.findOne({ email: correo });
+            const repetido =
+                (await supabase.from('administrators').select('id').eq('email', correo).maybeSingle()).data
+                || (await supabase.from('clients').select('id').eq('email', correo).maybeSingle()).data
+                || (await supabase.from('caregivers').select('id').eq('email', correo).maybeSingle()).data;
             if (repetido) errores.correo = 'Este correo ya está registrado';
         }
 
@@ -184,13 +183,14 @@ async function procesarRegistro(req, res, tipo) {
             return await prepararVista(req, res, { tipo, errores, valores });
         }
 
-        // 8. Se guarda SOLO como cliente o cuidador, cada uno en SU coleccion.
+        // 8. Se guarda SOLO como cliente o cuidador, cada uno en SU tabla.
         //    Nunca se puede registrar un admin.
-        // INICIO MODIFICACION: clientes -> clients | cuidadores -> caregivers
         const hash = await bcrypt.hash(password1, 10);
         let nuevo;
+        let tabla;
         if (tipo === 'cuidador') {
-            nuevo = new Caregiver({
+            tabla = 'caregivers';
+            const { data, error } = await supabase.from('caregivers').insert({
                 name: nombre,
                 apellido: apellido,
                 email: correo,
@@ -200,23 +200,27 @@ async function procesarRegistro(req, res, tipo) {
                 especialidad: especialidades,
                 especialidades: especialidades,
                 experiencia: experiencia,
-                fechaNacimiento: fecha
-            });
+                fecha_nacimiento: fecha ? fecha.toISOString() : null
+            }).select().single();
+            if (error) throw error;
+            nuevo = data;
         } else {
-            nuevo = new Client({
+            tabla = 'clients';
+            const { data, error } = await supabase.from('clients').insert({
                 name: nombre,
                 apellido: apellido,
                 email: correo,
                 password: hash,
                 role: 'cliente',
-                fechaNacimiento: fecha
-            });
+                fecha_nacimiento: fecha ? fecha.toISOString() : null
+            }).select().single();
+            if (error) throw error;
+            nuevo = data;
         }
-        await nuevo.save();
 
         // 9. Lo deja logueado, igual que hace Django despues del registro
         req.session.usuario = {
-            id: nuevo._id,
+            id: nuevo.id,
             name: nuevo.name,
             role: tipo,
             origen: tipo === 'cuidador' ? 'caregiver' : 'client'

@@ -27,10 +27,10 @@
           <% servicios.forEach(function(servicio) { %>
             <div class="servicio-card featured" style="background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.07); transition: transform 0.25s, box-shadow 0.25s; display: flex; flex-direction: column; border: 1px solid #f3f4f6;">
 
-              <% if (servicio.imageData) { %>
+              <% if (servicio.image_url) { %>
                 <!-- Card CON foto: la imagen manda -->
                 <div class="servicio-foto" title="Clic para ampliar">
-                  <img src="<%= servicio.imageData %>" alt="<%= servicio.name %>">
+                  <img src="<%= servicio.image_url %>" alt="<%= servicio.name %>">
                   <% if (servicio.price) { %>
                     <span class="servicio-precio-flotante"><%= formatearPrecio(servicio.price) %></span>
                   <% } %>

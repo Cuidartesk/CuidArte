@@ -1,18 +1,13 @@
 /* ============================================================
    ARCHIVO NUEVO COMPLETO
    controllers/cuidador.controller.js
-   Logica del dashboard del cuidador, portada de Django:
+   Logica del dashboard del cuidador, portada de Django con Supabase:
    dashboard_cuidador, solicitudes_cuidador, clientes_cuidador,
    perfil_cuidador y editar_perfil_cuidador.
-   Estilo del profe: el router solo declara rutas y aqui va todo.
    ============================================================ */
 
-// INICIO MODIFICACION: cada rol vive en su propia coleccion
-const Caregiver = require('../models/caregiver.model');
-const Client = require('../models/client.model');
-const Administrator = require('../models/admin.model');
-const Solicitud = require('../models/solicitud.model');
-// FIN MODIFICACION
+const supabase = require('../config/supabase');
+const { subirImagen } = require('../config/supabase');
 
 // Edad calculada igual que en Django (perfil.edad)
 function calcularEdad(fecha) {
@@ -26,7 +21,6 @@ function calcularEdad(fecha) {
 
 /* ===================== DASHBOARD ===================== */
 
-// INICIO MODIFICACION: pantalla principal del cuidador con sus 3 tarjetas
 exports.dashboard = async (req, res) => {
     try {
         res.render('pages/dashboard_cuidador');
@@ -34,19 +28,16 @@ exports.dashboard = async (req, res) => {
         res.redirect('/');
     }
 };
-// FIN MODIFICACION
 
 /* ===================== SOLICITUDES ===================== */
 
 // Lista las solicitudes recibidas por el cuidador logueado
-// INICIO MODIFICACION: portado de solicitudes_cuidador de Django
 exports.solicitudes = async (req, res) => {
     try {
-        const solicitudes = await Solicitud.find({ cuidador: req.session.usuario.id })
-            .populate('cliente')
-            .sort({ createdAt: -1 })
-            .lean();
-        res.render('pages/solicitudes_cuidador', { solicitudes });
+        const { data: solicitudes } = await supabase.from('solicitudes')
+            .select('*, cliente:clients(*)').eq('cuidador', req.session.usuario.id)
+            .order('created_at', { ascending: false });
+        res.render('pages/solicitudes_cuidador', { solicitudes: solicitudes || [] });
     } catch (error) {
         res.render('pages/solicitudes_cuidador', { solicitudes: [] });
     }
@@ -55,10 +46,8 @@ exports.solicitudes = async (req, res) => {
 // Acepta una solicitud (boton funcional extra al portarlo)
 exports.aceptarSolicitud = async (req, res) => {
     try {
-        await Solicitud.findOneAndUpdate(
-            { _id: req.params.id, cuidador: req.session.usuario.id },
-            { estado: 'aceptada' }
-        );
+        await supabase.from('solicitudes').update({ estado: 'aceptada' })
+            .eq('id', req.params.id).eq('cuidador', req.session.usuario.id);
         res.redirect('/solicitudes');
     } catch (error) {
         res.redirect('/solicitudes');
@@ -68,40 +57,35 @@ exports.aceptarSolicitud = async (req, res) => {
 // Rechaza una solicitud
 exports.rechazarSolicitud = async (req, res) => {
     try {
-        await Solicitud.findOneAndUpdate(
-            { _id: req.params.id, cuidador: req.session.usuario.id },
-            { estado: 'rechazada' }
-        );
+        await supabase.from('solicitudes').update({ estado: 'rechazada' })
+            .eq('id', req.params.id).eq('cuidador', req.session.usuario.id);
         res.redirect('/solicitudes');
     } catch (error) {
         res.redirect('/solicitudes');
     }
 };
-// FIN MODIFICACION
 
 /* ===================== CLIENTES ===================== */
 
 // Muestra los clientes registrados en la plataforma
-// INICIO MODIFICACION: portado de clientes_cuidador de Django
 exports.clientes = async (req, res) => {
     try {
-        const clientes = await Client.find().lean();
-        const lista = clientes.map(c => ({ ...c, edad: calcularEdad(c.fechaNacimiento) }));
+        const { data: clientes } = await supabase.from('clients').select('*');
+        const lista = (clientes || []).map(c => ({ ...c, edad: calcularEdad(c.fecha_nacimiento) }));
         res.render('pages/clientes_cuidador', { clientes: lista });
     } catch (error) {
         res.render('pages/clientes_cuidador', { clientes: [] });
     }
 };
-// FIN MODIFICACION
 
 /* ===================== PERFIL ===================== */
 
-// INICIO MODIFICACION: perfil profesional del cuidador, portado de perfil_cuidador.html
 exports.perfil = async (req, res) => {
     try {
-        const usuario = await Caregiver.findOne({ _id: req.session.usuario.id }).lean();
+        const { data: usuario } = await supabase.from('caregivers')
+            .select('*').eq('id', req.session.usuario.id).single();
         if (!usuario) return res.redirect('/');
-        usuario.edad = calcularEdad(usuario.fechaNacimiento);
+        usuario.edad = calcularEdad(usuario.fecha_nacimiento);
         res.render('pages/perfil_cuidador', {
             usuario,
             mensaje: req.query.ok ? '✔ Perfil actualizado correctamente' : null
@@ -110,13 +94,12 @@ exports.perfil = async (req, res) => {
         res.redirect('/');
     }
 };
-// FIN MODIFICACION
 
 // Formulario para editar el perfil del cuidador
-// INICIO MODIFICACION: portado de editar_perfil_cuidador de Django
 exports.formEditarPerfil = async (req, res) => {
     try {
-        const usuario = await Caregiver.findOne({ _id: req.session.usuario.id }).lean();
+        const { data: usuario } = await supabase.from('caregivers')
+            .select('*').eq('id', req.session.usuario.id).single();
         if (!usuario) return res.redirect('/');
         res.render('pages/editar_perfil_cuidador', { usuario, errores: {} });
     } catch (error) {
@@ -127,7 +110,8 @@ exports.formEditarPerfil = async (req, res) => {
 // Guarda los cambios (validaciones iguales a los formularios de Django)
 exports.actualizarPerfil = async (req, res) => {
     try {
-        const usuario = await Caregiver.findOne({ _id: req.session.usuario.id }).lean();
+        const { data: usuario } = await supabase.from('caregivers')
+            .select('*').eq('id', req.session.usuario.id).single();
         if (!usuario) return res.redirect('/');
 
         const v = req.body;
@@ -146,18 +130,16 @@ exports.actualizarPerfil = async (req, res) => {
         if (!/^[A-Za-z0-9._%+-]{3,}@[A-Za-z]{3,}\.[A-Za-z]{2,}$/.test(correo)) {
             errores.correo = 'Correo inválido.';
         } else {
-            const repetido = await Caregiver.findOne({ email: correo, _id: { $ne: usuario._id } })
-                || await Administrator.findOne({ email: correo })
-                || await Client.findOne({ email: correo });
+            const repetido =
+                (await supabase.from('caregivers').select('id').neq('id', usuario.id).eq('email', correo).maybeSingle()).data
+                || (await supabase.from('administrators').select('id').eq('email', correo).maybeSingle()).data
+                || (await supabase.from('clients').select('id').eq('email', correo).maybeSingle()).data;
             if (repetido) errores.correo = 'Este correo ya está registrado';
         }
 
         const telefono = String(v.telefono || '').trim();
         if (!/^\d{10}$/.test(telefono)) errores.telefono = 'El teléfono debe tener exactamente 10 números.';
 
-        // INICIO MODIFICACION: cedula opcional pero restringida:
-        // minimo 6 y maximo 10 caracteres, unicamente numeros (0-9);
-        // no se permiten letras, puntos, comas ni guiones
         const cedula = String(v.cedula || '').trim().replace(/\s/g, '');
         if (cedula && !/^\d{6,10}$/.test(cedula)) {
             if (!/^\d*$/.test(cedula)) {
@@ -166,9 +148,8 @@ exports.actualizarPerfil = async (req, res) => {
                 errores.cedula = 'La cédula debe tener entre 6 y 10 números.';
             }
         }
-        // FIN MODIFICACION
 
-        let fecha = usuario.fechaNacimiento;
+        let fecha = usuario.fecha_nacimiento;
         if (v.fechaNacimiento) {
             fecha = new Date(String(v.fechaNacimiento));
             if (isNaN(fecha.getTime())) errores.fechaNacimiento = 'Fecha inválida.';
@@ -194,21 +175,20 @@ exports.actualizarPerfil = async (req, res) => {
             telefono: telefono,
             direccion: String(v.direccion || '').trim(),
             cedula: cedula, // ya validada (6-10 numeros)
-            especialidad: String(v.especialidades || '').trim(), // se guarda en ambos campos
+            especialidad: String(v.especialidades || '').trim(),
             especialidades: String(v.especialidades || '').trim(),
             experiencia: experiencia,
-            fechaNacimiento: fecha
+            fecha_nacimiento: fecha ? new Date(fecha).toISOString() : null
         };
         if (v.fotoData && String(v.fotoData).startsWith('data:image')) {
-            cambios.foto = v.fotoData;
-            cambios.fotoTipo = 'jpeg';
+            const foto_url = await subirImagen(v.fotoData, 'avatars', nombre || 'cuidador');
+            if (foto_url) cambios.foto_url = foto_url;
         }
 
-        await Caregiver.findOneAndUpdate({ _id: usuario._id }, cambios);
+        await supabase.from('caregivers').update(cambios).eq('id', usuario.id);
         res.redirect('/perfil-cuidador?ok=1');
     } catch (error) {
         console.error('Error actualizando perfil cuidador:', error);
         res.status(400).send('Error al actualizar el perfil: ' + error.message);
     }
 };
-// FIN MODIFICACION

@@ -12,10 +12,11 @@ const { subirImagen } = require('../config/supabase');
 // Edad calculada igual que en Django (perfil.edad)
 function calcularEdad(fecha) {
     if (!fecha) return null;
+    const f = new Date(fecha);
     const hoy = new Date();
-    let edad = hoy.getFullYear() - fecha.getFullYear();
-    const mes = hoy.getMonth() - fecha.getMonth();
-    if (mes < 0 || (mes === 0 && hoy.getDate() < fecha.getDate())) edad--;
+    let edad = hoy.getFullYear() - f.getFullYear();
+    const mes = hoy.getMonth() - f.getMonth();
+    if (mes < 0 || (mes === 0 && hoy.getDate() < f.getDate())) edad--;
     return edad;
 }
 

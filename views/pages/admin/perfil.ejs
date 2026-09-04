@@ -33,7 +33,7 @@
         <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 0.92rem;"><%= usuario.email %></p>
         <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
           <span style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.3px;">ADMINISTRADOR</span>
-          <% var fechaCreacion = new Date(usuario.createdAt || Date.now()); %>
+          <% var fechaCreacion = new Date(usuario.created_at || Date.now()); %>
           <span style="background: #f3f4f6; color: #6b7280; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;">Miembro desde <%= ('0' + fechaCreacion.getDate()).slice(-2) %>/<%= ('0' + (fechaCreacion.getMonth() + 1)).slice(-2) %>/<%= fechaCreacion.getFullYear() %></span>
         </div>
       </div>
@@ -63,8 +63,8 @@
         <div style="display: flex; justify-content: space-between; padding: 11px 14px; background: #f9fafb; border-radius: 10px;">
           <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Fecha de nacimiento</span>
           <span style="color: #374151; font-size: 0.9rem;">
-            <% if (usuario.fechaNacimiento) { %>
-              <% var fn = new Date(usuario.fechaNacimiento); %>
+            <% if (usuario.fecha_nacimiento) { %>
+              <% var fn = new Date(usuario.fecha_nacimiento); %>
               <%= ('0' + fn.getUTCDate()).slice(-2) %>/<%= ('0' + (fn.getUTCMonth() + 1)).slice(-2) %>/<%= fn.getUTCFullYear() %>
             <% } else { %>&mdash;<% } %>
           </span>

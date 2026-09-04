@@ -60,7 +60,7 @@
                   <% } %>
                 </td>
                 <td style="padding: 14px 16px;">
-                  <% if (p.imageData) { %>
+                  <% if (p.image_url) { %>
                     <span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">Si</span>
                   <% } else { %>
                     <span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">No</span>
@@ -76,9 +76,9 @@
                 </td>
                 <!-- FIN MODIFICACION -->
                 <td style="padding: 14px 16px; text-align: center;">
-                  <a href="/admin/productos/<%= p._id %>/editar" style="background: #e0f2fe; color: #0284c7; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 600; margin-right: 6px;">Editar</a>
+                  <a href="/admin/productos/<%= p.id %>/editar" style="background: #e0f2fe; color: #0284c7; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 600; margin-right: 6px;">Editar</a>
                   <!-- INICIO MODIFICACION: eliminar va en formulario POST -->
-                  <form method="POST" action="/admin/productos/<%= p._id %>?_method=DELETE" style="display: inline;" onsubmit="return confirm('&iquest;Eliminar este producto?');">
+                  <form method="POST" action="/admin/productos/<%= p.id %>?_method=DELETE" style="display: inline;" onsubmit="return confirm('&iquest;Eliminar este producto?');">
                     <button type="submit" style="background: #fee2e2; color: #dc2626; padding: 6px 12px; border-radius: 8px; border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer;">Eliminar</button>
                   </form>
                   <!-- FIN MODIFICACION -->

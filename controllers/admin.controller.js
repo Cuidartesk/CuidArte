@@ -2,7 +2,7 @@
    ARCHIVO NUEVO COMPLETO
    controllers/admin.controller.js
    Logica del panel de administrador, siguiendo el mismo estilo
-   de los demas controllers del proyecto (profe nodemongoose1):
+   de los demas controllers del proyecto:
    el router solo declara rutas y aqui va todo el trabajo.
    ============================================================ */
 

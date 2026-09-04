@@ -1,6 +1,7 @@
 /* ============================================================
    imagenes_base64.js
-   Proceso completo para guardar una imagen dentro de MongoDB:
+   Proceso completo para convertir una imagen a Base64 y enviarla al servidor,
+   donde se sube a Supabase Storage:
      1. FileReader lee el archivo que eligio el usuario
      2. Canvas lo normaliza a un lienzo 1200x900 con fondo de marca
      3. Lo convierte en texto "data:image/jpeg;base64,..."

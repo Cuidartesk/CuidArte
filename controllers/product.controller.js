@@ -9,9 +9,12 @@ exports.formulario = (req, res) => {
 // Crea un producto (la imagen llega como Base64 desde el navegador)
 exports.registrar = async (req, res) => {
     try {
-        const image_url = await subirImagen(req.body.imageData || '', 'cuidarte', req.body.name || 'producto');
+        const { imageData, ...resto } = req.body;
+        resto.price = Number(resto.price || 0);
+        resto.stock = Number(resto.stock ?? 10);
+        const image_url = await subirImagen(imageData || '', 'cuidarte', resto.name || 'producto');
         const { data, error } = await supabase.from('products').insert({
-            ...req.body,
+            ...resto,
             image_url
         }).select().single();
         if (error) throw error;

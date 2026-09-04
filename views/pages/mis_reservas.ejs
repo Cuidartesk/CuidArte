@@ -28,7 +28,7 @@
                   <% if (s.servicio) { %>
                     <p style="margin: 4px 0 0 0; color: #0ea5e9; font-size: 0.85rem; font-weight: 600;"><%= s.servicio %></p>
                   <% } %>
-                  <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 0.88rem;"><%= new Date(s.createdAt).toLocaleString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></p>
+                  <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 0.88rem;"><%= new Date(s.created_at).toLocaleString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></p>
                   <% if (s.mensaje) { %>
                     <p style="margin: 8px 0 0 0; color: #374151; background: #f9fafb; padding: 10px 14px; border-radius: 10px; white-space: pre-wrap;"><%= s.mensaje %></p>
                   <% } %>

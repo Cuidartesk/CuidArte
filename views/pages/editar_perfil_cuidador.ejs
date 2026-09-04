@@ -24,7 +24,7 @@
 
     <!-- INICIO MODIFICACION: la foto viaja en Base64 dentro del campo oculto, igual que productos/servicios -->
     <form method="POST" action="/editar-perfil-cuidador" id="formPerfilCuidador" style="display: flex; flex-direction: column; gap: 20px;">
-      <input type="hidden" name="fotoData" id="fotoData" value="<%= usuario.foto || '' %>">
+      <input type="hidden" name="fotoData" id="fotoData" value="<%= usuario.foto_url || '' %>">
       <!-- FIN MODIFICACION -->
 
       <!-- Información Personal -->
@@ -72,14 +72,14 @@
 
         <div style="margin-top: 14px;">
           <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Fecha de nacimiento *</label>
-          <input type="date" name="fechaNacimiento" class="form-control" value="<%= usuario.fechaNacimiento ? new Date(usuario.fechaNacimiento).toISOString().substring(0,10) : '' %>" required>
+          <input type="date" name="fechaNacimiento" class="form-control" value="<%= usuario.fecha_nacimiento ? new Date(usuario.fecha_nacimiento).toISOString().substring(0,10) : '' %>" required>
           <% if (errores.fechaNacimiento) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.fechaNacimiento %></p><% } %>
         </div>
 
         <div style="margin-top: 14px;">
           <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Foto de perfil</label>
           <input type="file" id="imagenPerfil" accept="image/*">
-          <img id="previewPerfil" src="<%= usuario.foto || '' %>" alt="Vista previa" style="<%= usuario.foto ? 'max-width: 140px; border-radius: 12px; margin-top: 8px;' : 'display: none; max-width: 140px; border-radius: 12px; margin-top: 8px;' %>">
+          <img id="previewPerfil" src="<%= usuario.foto_url || '' %>" alt="Vista previa" style="<%= usuario.foto_url ? 'max-width: 140px; border-radius: 12px; margin-top: 8px;' : 'display: none; max-width: 140px; border-radius: 12px; margin-top: 8px;' %>">
           <% if (errores.foto) { %><p style="color: #dc2626; font-size: 0.82rem; margin: 4px 0 0 0;"><%= errores.foto %></p><% } %>
         </div>
       </div>

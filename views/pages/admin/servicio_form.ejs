@@ -27,7 +27,7 @@
     <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 32px;">
       <!-- INICIO MODIFICACION: el action cambia segun sea crear o editar -->
       <% if (accion === 'Editar') { %>
-        <form id="formServicio" method="POST" action="/admin/servicios/<%= servicio._id %>?_method=PUT">
+        <form id="formServicio" method="POST" action="/admin/servicios/<%= servicio.id %>?_method=PUT">
       <% } else { %>
         <form id="formServicio" method="POST" action="/admin/servicios">
       <% } %>
@@ -51,15 +51,14 @@
                  style="width: 100%; padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; background: #f9fafb;">
         </div>
 
-        <!-- INICIO MODIFICACION: imagen Base64 guardada en MongoDB -->
+        <!-- INICIO MODIFICACION: imagen que se sube a Supabase Storage -->
         <div style="margin-bottom: 18px;">
           <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Imagen del servicio</label>
           <input type="file" id="imagenServicio" accept="image/*"
                  style="font-size: 0.9rem; color: #374151;">
-          <img id="previewServicio" src="<%= accion === 'Editar' && servicio.imageData ? servicio.imageData : '' %>" alt=""
-               style="<%= accion === 'Editar' && servicio.imageData ? 'display:block;' : 'display:none;' %> max-width: 200px; margin-top: 10px; border-radius: 10px;">
-          <input type="hidden" name="imageData" id="imageDataServicio"
-                 value="<%= accion === 'Editar' ? servicio.imageData : '' %>">
+          <img id="previewServicio" src="<%= accion === 'Editar' && servicio.image_url ? servicio.image_url : '' %>" alt=""
+               style="<%= accion === 'Editar' && servicio.image_url ? 'display:block;' : 'display:none;' %> max-width: 200px; margin-top: 10px; border-radius: 10px;">
+          <input type="hidden" name="imageData" id="imageDataServicio" value="">
         </div>
         <!-- FIN MODIFICACION -->
 

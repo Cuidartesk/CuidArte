@@ -52,7 +52,7 @@
         </div>
         <div style="margin-top: 14px;">
           <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Fecha de nacimiento</label>
-          <% var fn = usuario.fechaNacimiento ? new Date(usuario.fechaNacimiento) : null; %>
+          <% var fn = usuario.fecha_nacimiento ? new Date(usuario.fecha_nacimiento) : null; %>
           <input type="date" name="fechaNacimiento" value="<%= fn ? fn.toISOString().substring(0, 10) : '' %>" style="width: 100%; padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; background: #f9fafb; box-sizing: border-box;">
         </div>
 

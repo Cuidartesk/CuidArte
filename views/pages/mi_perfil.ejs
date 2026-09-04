@@ -19,8 +19,8 @@
     <!-- Cabecera -->
     <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 26px; display: flex; gap: 20px; align-items: center; margin-bottom: 22px; flex-wrap: wrap;">
       <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: #f3f4f6; flex-shrink: 0; border: 3px solid #e0f2fe;">
-        <% if (usuario.foto) { %>
-          <img src="<%= usuario.foto %>" alt="Foto de perfil" style="width: 100%; height: 100%; object-fit: cover;">
+        <% if (usuario.foto_url) { %>
+          <img src="<%= usuario.foto_url %>" alt="Foto de perfil" style="width: 100%; height: 100%; object-fit: cover;">
         <% } else { %>
           <img src="/assets/image/user2.png" alt="Foto de perfil" style="width: 100%; height: 100%; object-fit: cover;">
         <% } %>
@@ -33,8 +33,8 @@
           <% if (usuario.direccion) { %>
             <span style="background: #f3f4f6; color: #6b7280; padding: 5px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;">&#128205; <%= usuario.direccion %></span>
           <% } %>
-          <% if (usuario.createdAt) { %>
-            <span style="background: #f3f4f6; color: #6b7280; padding: 5px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;">Miembro desde <%= new Date(usuario.createdAt).toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' }) %></span>
+          <% if (usuario.created_at) { %>
+            <span style="background: #f3f4f6; color: #6b7280; padding: 5px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;">Miembro desde <%= new Date(usuario.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' }) %></span>
           <% } %>
         </div>
       </div>
@@ -59,7 +59,7 @@
         </div>
         <div style="display: flex; justify-content: space-between; padding: 11px 14px; background: #f9fafb; border-radius: 10px;">
           <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Fecha de nacimiento</span>
-          <span style="color: #374151; font-size: 0.9rem;"><%= usuario.fechaNacimiento ? new Date(usuario.fechaNacimiento).toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'No especificado' %></span>
+          <span style="color: #374151; font-size: 0.9rem;"><%= usuario.fecha_nacimiento ? new Date(usuario.fecha_nacimiento).toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'No especificado' %></span>
         </div>
         <div style="display: flex; justify-content: space-between; padding: 11px 14px; background: #f9fafb; border-radius: 10px;">
           <span style="color: #6b7280; font-size: 0.88rem; font-weight: 600;">Ciudad</span>

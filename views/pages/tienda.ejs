@@ -78,7 +78,7 @@
                 <div style="margin-top: 15px;">
                   <% if (producto.stock > 0) { %>
                     <% if (locals.usuario) { %>
-                      <form method="post" action="/agregar-carrito/<%= producto._id %>">
+                      <form method="post" action="/agregar-carrito/<%= producto.id %>">
                         <button type="submit" style="display: block; width: 100%; padding: 12px; border-radius: 10px; font-weight: 700; background: linear-gradient(135deg, #27BEF5, #6DD5FA); color: white; border: none; cursor: pointer;">Agregar al carrito</button>
                       </form>
                     <% } else { %>

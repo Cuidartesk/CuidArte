@@ -45,8 +45,8 @@
             <% cuidadores.forEach(function(c) { %>
               <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); overflow: hidden; display: flex; flex-direction: column;">
                 <div style="height: 170px; background: #f3f4f6; overflow: hidden;">
-                  <% if (c.foto) { %>
-                    <img src="<%= c.foto %>" alt="<%= c.name %>" style="width: 100%; height: 100%; object-fit: cover;">
+                  <% if (c.foto_url) { %>
+                    <img src="<%= c.foto_url %>" alt="<%= c.name %>" style="width: 100%; height: 100%; object-fit: cover;">
                   <% } else { %>
                     <img src="/assets/image/user1.png" alt="Cuidador" style="width: 100%; height: 100%; object-fit: cover;">
                   <% } %>
@@ -58,7 +58,7 @@
                     <% if (c.edad) { %><span style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;"><%= c.edad %> a&ntilde;os</span><% } %>
                     <% if (c.direccion) { %><span style="background: #f3f4f6; color: #6b7280; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem;">&#128205; <%= c.direccion.substring(0, 18) %></span><% } %>
                   </div>
-                  <a href="/ver-cuidador/<%= c._id %>" style="margin-top: auto; background: #27BEF5; color: white; padding: 9px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 700; font-size: 0.9rem;">Ver m&aacute;s</a>
+                  <a href="/ver-cuidador/<%= c.id %>" style="margin-top: auto; background: #27BEF5; color: white; padding: 9px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 700; font-size: 0.9rem;">Ver m&aacute;s</a>
                 </div>
               </div>
             <% }); %>

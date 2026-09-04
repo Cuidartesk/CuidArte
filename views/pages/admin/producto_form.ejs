@@ -29,7 +29,7 @@
     <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 32px;">
       <!-- INICIO MODIFICACION: el action cambia segun sea crear o editar -->
       <% if (accion === 'Editar') { %>
-        <form id="formProducto" method="POST" action="/admin/productos/<%= producto._id %>?_method=PUT">
+        <form id="formProducto" method="POST" action="/admin/productos/<%= producto.id %>?_method=PUT">
       <% } else { %>
         <form id="formProducto" method="POST" action="/admin/productos">
       <% } %>
@@ -73,16 +73,15 @@
           </select>
         </div>
 
-        <!-- INICIO MODIFICACION: campo de imagen que se guarda en MongoDB como Base64 -->
+        <!-- INICIO MODIFICACION: campo de imagen que se sube a Supabase Storage -->
         <div style="margin-bottom: 18px;">
           <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 0.9rem;">Imagen del producto</label>
           <input type="file" id="imagen" accept="image/*"
                  style="font-size: 0.9rem; color: #374151;">
-          <img id="preview" src="<%= accion === 'Editar' && producto.imageData ? producto.imageData : '' %>" alt=""
-               style="<%= accion === 'Editar' && producto.imageData ? 'display:block;' : 'display:none;' %> max-width: 200px; margin-top: 10px; border-radius: 10px;">
+          <img id="preview" src="<%= accion === 'Editar' && producto.image_url ? producto.image_url : '' %>" alt=""
+               style="<%= accion === 'Editar' && producto.image_url ? 'display:block;' : 'display:none;' %> max-width: 200px; margin-top: 10px; border-radius: 10px;">
           <!-- Aqui JS coloca la imagen ya convertida a texto Base64 -->
-          <input type="hidden" name="imageData" id="imageData"
-                 value="<%= accion === 'Editar' ? producto.imageData : '' %>">
+          <input type="hidden" name="imageData" id="imageData" value="">
         </div>
         <!-- FIN MODIFICACION -->
 

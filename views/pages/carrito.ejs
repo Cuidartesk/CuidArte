@@ -51,7 +51,7 @@
                   <td style="padding: 14px 16px; color: #1f2937; font-weight: 600;"><%= item.cantidad %></td>
                   <td style="padding: 14px 16px; color: #1f2937; font-weight: 700;"><%= formatearPrecio(item.subtotal) %></td>
                   <td style="padding: 14px 16px; text-align: center;">
-                    <a href="/quitar-carrito/<%= item.producto._id %>" style="background: #fee2e2; color: #dc2626; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 0.82rem; font-weight: 600;">Quitar</a>
+                    <a href="/quitar-carrito/<%= item.producto.id %>" style="background: #fee2e2; color: #dc2626; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 0.82rem; font-weight: 600;">Quitar</a>
                   </td>
                 </tr>
               <% }); %>

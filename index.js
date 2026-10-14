@@ -7,6 +7,12 @@ const routes = require('./router/enrutamiento.router');
 const caregiverController = require('./controllers/caregiver.controller');
 const supabase = require('./config/supabase');
 const productController = require('./controllers/product.controller');
+// INICIO MODIFICACION: File System (leer, escribir, borrar, leerPermisos)
+const fileSystem = require('./utils/fileSystem');
+// FIN MODIFICACION
+// INICIO MODIFICACION: backup automatico de la BD + envio por correo
+const { iniciarCron } = require('./utils/cron');
+// FIN MODIFICACION
 const PORT = process.env.PORT || 8000;
 
 /* ===================== INICIO MODIFICACION 1: SESIONES Y LOGIN ===================== */
@@ -140,6 +146,10 @@ app.post('/login', async (req, res) => {
       origen
     };
 
+    // INICIO MODIFICACION: guarda en app.log quien inicio sesion (File System)
+    fileSystem.escribir(user.name);
+    // FIN MODIFICACION
+
     // 4. Redirige segun su rol, igual que Django:
     //    admin -> panel | cuidador -> su dashboard | cliente -> su dashboard
     if (user.role === 'admin') {
@@ -160,6 +170,11 @@ app.post('/login', async (req, res) => {
 
 // Cierra la sesion
 app.get('/logout', (req, res) => {
+  // INICIO MODIFICACION: registra el cierre de sesion (File System)
+  if (req.session.usuario && req.session.usuario.name) {
+    fileSystem.escribir(`Cierre de sesión de ${req.session.usuario.name}`);
+  }
+  // FIN MODIFICACION
   req.session.destroy(() => {
     res.redirect('/');
   });
@@ -210,4 +225,7 @@ app.use('/api/v1', routes);
 app.listen(PORT, () => {
     console.log('Servidor en ejecución en el puerto', PORT);
     console.log(`Disponible en: http://localhost:${PORT}`);
+    // INICIO MODIFICACION: arranca el cron del backup automatico (File System + correo)
+    iniciarCron();
+    // FIN MODIFICACION
 });

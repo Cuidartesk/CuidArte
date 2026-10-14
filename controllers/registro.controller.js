@@ -4,6 +4,9 @@
 // Cada rol se guarda en SU tabla: clientes -> clients, cuidadores -> caregivers
 const supabase = require('../config/supabase');
 const bcrypt = require('bcrypt');
+// INICIO MODIFICACION: File System (leer, escribir, borrar, leerPermisos)
+const fileSystem = require('../utils/fileSystem');
+// FIN MODIFICACION
 
 const ESPECIALIDADES = [
     'Geriatría', 'Enfermería', 'Psicología', 'Fisioterapia', 'Nutrición',
@@ -225,6 +228,9 @@ async function procesarRegistro(req, res, tipo) {
             role: tipo,
             origen: tipo === 'cuidador' ? 'caregiver' : 'client'
         };
+        // INICIO MODIFICACION: guarda en app.log el nuevo registro (File System)
+        fileSystem.escribir(`Nuevo ${tipo} registrado: ${nuevo.name}`);
+        // FIN MODIFICACION
         delete req.session.captcha;
         // INICIO MODIFICACION: cada rol entra a su dashboard, igual que en Django
         res.redirect(tipo === 'cuidador' ? '/dashboard-cuidador' : '/dashboard-cliente');

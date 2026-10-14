@@ -17,6 +17,9 @@ require('dotenv').config();
 const bcrypt = require('bcrypt');
 const readline = require('readline');
 const supabase = require('./config/supabase');
+// INICIO MODIFICACION: File System (leer, escribir, borrar, leerPermisos)
+const fileSystem = require('./utils/fileSystem');
+// FIN MODIFICACION
 
 // Pregunta por consola
 function preguntar(rl, texto) {
@@ -52,6 +55,9 @@ async function crearAdmin(nombre, correo, clave) {
         await supabase.from('administrators').update({ name: nombre, password: hash })
             .eq('id', existente.id);
         console.log(`[OK] El administrador "${correo}" ya existia y fue ACTUALIZADO.`);
+        // INICIO MODIFICACION: guarda en app.log la actualizacion del admin (File System)
+        fileSystem.escribir(`Administrador actualizado: ${nombre} <${correo}>`);
+        // FIN MODIFICACION
     } else {
         const hash = await bcrypt.hash(clave, 10);
         await supabase.from('administrators').insert({
@@ -61,6 +67,9 @@ async function crearAdmin(nombre, correo, clave) {
             role: 'admin'
         });
         console.log(`[OK] Administrador creado en 'administrators': ${nombre} <${correo}>`);
+        // INICIO MODIFICACION: guarda en app.log la creacion del admin (File System)
+        fileSystem.escribir(`Administrador creado: ${nombre} <${correo}>`);
+        // FIN MODIFICACION
     }
 
     console.log('[INFO] En la BD solo quedo el HASH, nunca la contrasena real.');

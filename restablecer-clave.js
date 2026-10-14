@@ -12,6 +12,9 @@
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const supabase = require('./config/supabase');
+// INICIO MODIFICACION: File System (leer, escribir, borrar, leerPermisos)
+const fileSystem = require('./utils/fileSystem');
+// FIN MODIFICACION
 
 async function main() {
   const [correo, clave] = process.argv.slice(2);
@@ -40,6 +43,9 @@ async function main() {
       await supabase.from(tabla).update({ password: hash }).eq('id', cuenta.id);
       console.log(`[OK] Contrasena actualizada para ${emailBuscado} (tabla: ${tabla})`);
       console.log('[INFO] En la BD solo quedo el HASH, nunca la contrasena real.');
+      // INICIO MODIFICACION: guarda en app.log el restablecimiento (File System)
+      fileSystem.escribir(`Contraseña restablecida: ${emailBuscado} (tabla: ${tabla})`);
+      // FIN MODIFICACION
       process.exit(0);
     }
   }

@@ -19,6 +19,8 @@ const PORT = process.env.PORT || 8000;
 // Librerias para manejar sesiones (quien esta logueado) y contrasenas cifradas
 const session = require('express-session');
 const bcrypt = require('bcrypt');
+// Almacen de sesiones en memoria con limpieza automatica (evita el warning de MemoryStore)
+const MemoryStore = require('memorystore')(session);
 /* ====================== FIN MODIFICACION 1: SESIONES Y LOGIN ======================= */
 
 // Parseo de peticiones: JSON (API) y urlencoded (formularios HTML)
@@ -41,6 +43,9 @@ app.use(session({
     secret: process.env.SESSION_SECRET || 'cambiame-en-produccion',
     resave: false,
     saveUninitialized: false,
+    store: new MemoryStore({
+        checkPeriod: 1000 * 60 * 60 // limpia las sesiones expiradas cada hora
+    }),
     cookie: { maxAge: 1000 * 60 * 60 * 2 } // la sesion dura 2 horas
 }));
 

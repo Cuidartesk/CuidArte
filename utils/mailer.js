@@ -16,11 +16,13 @@ const transporter = nodemailer.createTransport({
 exports.enviarBackup = async (rutaArchivo) => {
     try {
         const destino = process.env.BACKUP_EMAIL || process.env.SMTP_USER;
+        const fecha = new Date().toLocaleString('es-CO');
+
         await transporter.sendMail({
-            from: `"CuidArte Backup" <${process.env.SMTP_USER}>`,
+            from: `"CuidArte" <${process.env.SMTP_USER}>`,
             to: destino,
-            subject: `Backup CuidArte - ${new Date().toLocaleString()}`,
-            text: 'Adjunto el respaldo automatico de la base de datos de CuidArte.',
+            subject: `Backup CuidArte(${fecha})`,
+            text: `Archivo json con el respaldo de la base de datos de CuidArte, se utilizó la base de datos de supabase, que es una DB relacional y no exporta los archivos uno por uno si no que se puede exportar un archivo con toda la informacion en formato JSON (${fecha}) .\n\n Santiago Grajales, envio de nuevo ya que lo envie sin haber cargado los cambios que yo hice`,
             attachments: [
                 {
                     filename: path.basename(rutaArchivo),

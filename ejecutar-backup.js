@@ -5,10 +5,13 @@ const backup = require('./utils/backup');
 const mailer = require('./utils/mailer');
 
 (async () => {
-    console.log('Realizando Backup de la Base de datos');
+    console.log('   INICIANDO EL RESPALDO MANUAL DE CUIDARTE       ');
+
     const ruta = await backup.backupDatabase();
     if (ruta) {
+        console.log('\nEnviando respaldo por correo electronico...');
         await mailer.enviarBackup(ruta);
+        console.log('>> Proceso completado correctamente.');
     }
     process.exit(0);
 })();

@@ -15,7 +15,7 @@ const TABLAS = [
 ];
 
 // Igual que en el ejemplo del profesor, el respaldo se guarda en ./backup
-const outputPath = './backup';
+const outputPath = './respaldos_sistema';
 
 // Equivalente al backupDatabase del profesor (que usaba mongodump).
 // Como CuidArte usa Supabase (PostgreSQL), leemos cada tabla con su API
@@ -25,22 +25,27 @@ exports.backupDatabase = async () => {
         fs.mkdirSync(outputPath, { recursive: true });
 
         const respaldo = {
-            base_datos: 'CuidArte (Supabase/PostgreSQL)',
-            fecha: new Date().toISOString(),
-            tablas: {}
+            sistema: 'CuidArte Web',
+            desarrollador: 'Santiago Giraldo',
+            motor_db: 'Supabase (PostgreSQL Cloud)',
+            fecha_generacion: new Date().toLocaleString('es-CO'),
+            total_tablas: TABLAS.length,
+            tablas_respaldadas: {}
         };
-
         for (const tabla of TABLAS) {
             const { data, error } = await supabase.from(tabla).select('*');
             if (error) {
-                console.error(`Error leyendo la tabla ${tabla}: ${error.message}`);
-                respaldo.tablas[tabla] = { error: error.message };
+                console.error(`[ERROR] No se pudo leer ${tabla}: ${error.message}`);
+                respaldo.tablas_respaldadas[tabla] = { error: error.message };
                 continue;
             }
-            respaldo.tablas[tabla] = data;
+            respaldo.tablas_respaldadas[tabla] = data;
+            console.log(` -> Tabla [${tabla}] respaldada: ${data.length} filas`);
         }
 
-        const nombre = `backup_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+        const fecha = new Date();
+        const fechaStr = `${fecha.getFullYear()}-${fecha.getMonth() + 1}-${fecha.getDate()}_${fecha.getHours()}-${fecha.getMinutes()}`;
+        const nombre = `cuidarte_backup_${fechaStr}.json`;
         const ruta = path.join(outputPath, nombre);
         fs.writeFileSync(ruta, JSON.stringify(respaldo, null, 2), 'utf8');
 
